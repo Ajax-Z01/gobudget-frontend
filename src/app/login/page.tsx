@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { login } from "@/services/auth";
 import { useRouter } from "next/navigation";
 import LoginForm from "@/components/form/LoginForm";
 import Switch from "@/components/ui/ThemeSwitcher";
@@ -17,12 +16,27 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    if (!email.trim() || !password.trim()) {
+      setError("Email and password are required");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const data = await login(email, password);
-      sessionStorage.setItem("token", data.token);
-      router.push("/dashboard");
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      router.replace("/dashboard");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -30,7 +44,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      {/* Theme Switcher */}
       <div className="absolute top-4 right-4 z-10">
         <Switch />
       </div>
