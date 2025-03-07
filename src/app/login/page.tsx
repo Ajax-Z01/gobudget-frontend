@@ -1,53 +1,34 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import LoginForm from "@/components/form/LoginForm";
-import Switch from "@/components/ui/ThemeSwitcher";
+'use client';
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+import React, { useState } from 'react';
+import { login } from '@/services/auth';
+import { useRouter } from 'next/navigation';
+import LoginForm from '@/components/form/LoginForm';
+
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
-    if (!email.trim() || !password.trim()) {
-      setError("Email and password are required");
-      setLoading(false);
-      return;
-    }
+    setError('');
 
     try {
-      const response = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-
-      router.replace("/dashboard");
+      await login(email, password);
+      router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="absolute top-4 right-4 z-10">
-        <Switch />
-      </div>
-      {error && <p className="text-red-500 text-center">{error}</p>}
+    <div className="items-center justify-center min-h-screen bg-gray-900">
       <LoginForm
         email={email}
         setEmail={setEmail}
@@ -56,6 +37,9 @@ export default function LoginPage() {
         handleSubmit={handleSubmit}
         loading={loading}
       />
+      {error && <p className="text-red-500 text-center mt-4">{error}</p>}
     </div>
   );
-}
+};
+
+export default LoginPage;

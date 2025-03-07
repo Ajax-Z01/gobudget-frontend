@@ -3,29 +3,37 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-interface FormProps {
+interface RegisterFormProps {
   email: string;
   setEmail: (email: string) => void;
   password: string;
   setPassword: (password: string) => void;
+  confirmPassword: string;
+  setConfirmPassword: (password: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
   loading: boolean;
 }
 
-const LoginForm: React.FC<FormProps> = ({
+const RegisterForm: React.FC<RegisterFormProps> = ({
   email,
   setEmail,
   password,
   setPassword,
+  confirmPassword,
+  setConfirmPassword,
   handleSubmit,
   loading,
 }) => {
-  const router = useRouter();
+  const router = useRouter(); // Router untuk navigasi
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-white text-2xl font-bold text-center mb-6">Sign In</h2>
+      <form 
+        onSubmit={handleSubmit} 
+        className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md"
+        autoComplete="off"
+      >
+        <h2 className="text-white text-2xl font-bold text-center mb-6">Sign Up</h2>
         
         <div className="mb-4">
           <label className="block text-gray-300 mb-1">Email</label>
@@ -35,6 +43,7 @@ const LoginForm: React.FC<FormProps> = ({
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="off"
             required
           />
         </div>
@@ -47,15 +56,22 @@ const LoginForm: React.FC<FormProps> = ({
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="off"
             required
           />
         </div>
         
-        <div className="flex justify-between items-center text-gray-400 text-sm mb-4">
-          <label className="flex items-center">
-            <input type="checkbox" className="mr-2" /> Remember me
-          </label>
-          <a href="#" className="text-blue-500 hover:underline">Forgot password?</a>
+        <div className="mb-4">
+          <label className="block text-gray-300 mb-1">Confirm Password</label>
+          <input
+            type="password"
+            className="w-full p-3 rounded bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="off"
+            required
+          />
         </div>
         
         <button
@@ -63,32 +79,18 @@ const LoginForm: React.FC<FormProps> = ({
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded focus:outline-none"
           disabled={loading}
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {loading ? 'Signing up...' : 'Sign Up'}
         </button>
-        
-        <p className="text-gray-400 text-center mt-4">
-          Don't have an account?  
-          <button 
+
+        {/* Tombol Sudah Punya Akun */}
+        <div className="text-center mt-4">
+          <p className="text-gray-400">Already have an account?</p>
+          <button
             type="button"
-            onClick={() => router.push('/register')}
-            className="text-blue-500 hover:underline ml-1"
+            onClick={() => router.push('/login')} // Navigasi ke halaman login
+            className="mt-2 inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-all"
           >
-            Sign Up
-          </button>
-        </p>
-        
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-600" />
-          <span className="text-gray-400 mx-2">Or With</span>
-          <hr className="flex-grow border-gray-600" />
-        </div>
-        
-        <div className="flex gap-3">
-          <button className="flex-1 flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white py-2 rounded">
-            Google
-          </button>
-          <button className="flex-1 flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white py-2 rounded">
-            Apple
+            Sign In
           </button>
         </div>
       </form>
@@ -96,4 +98,4 @@ const LoginForm: React.FC<FormProps> = ({
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

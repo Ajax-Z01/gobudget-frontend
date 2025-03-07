@@ -3,8 +3,6 @@ import Cookies from "js-cookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-console.log("🔍 API_URL:", API_URL);
-
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -22,8 +20,6 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
-    console.log("✅ Response from:", response.config.url);
-    console.log("✅ Response data:", response.data);
     return response;
   },
   (error) => {
@@ -62,7 +58,7 @@ export const createTransaction = async (transactionData: Record<string, any>) =>
   }
 };
 
-export const getTransactionById = async (id: string) => {
+export const getTransactionById = async (id: number) => {
   try {
     if (!id) {
       throw new Error("Transaction ID is required");
@@ -78,7 +74,7 @@ export const getTransactionById = async (id: string) => {
   }
 };
 
-export const updateTransaction = async (id: string, updatedData: Record<string, any>) => {
+export const updateTransaction = async (id: number, updatedData: Record<string, any>) => {
   try {
     if (!id || !updatedData || typeof updatedData !== "object") {
       throw new TypeError("Invalid transaction update data");
@@ -94,7 +90,7 @@ export const updateTransaction = async (id: string, updatedData: Record<string, 
   }
 };
 
-export const deleteTransaction = async (id: string) => {
+export const deleteTransaction = async (id: number) => {
   try {
     if (!id) {
       throw new Error("Transaction ID is required for deletion");
@@ -106,6 +102,22 @@ export const deleteTransaction = async (id: string) => {
     return response.data;
   } catch (error: any) {
     console.error("❌ Error deleting transaction:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const restoreTransaction = async (id: number) => {
+  try {
+    if (!id) {
+      throw new Error("Transaction ID is required for restoration");
+    }
+
+    console.log("🔍 Restoring transaction with ID:", id);
+
+    const response = await api.put(`/transactions/restore/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Error restoring transaction:", error.response?.data || error.message);
     throw error;
   }
 };

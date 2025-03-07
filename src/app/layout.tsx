@@ -27,7 +27,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        {/* ThemeProvider harus membungkus seluruh aplikasi */}
         <ThemeProvider attribute="class" enableSystem defaultTheme="light">
           {children}
         </ThemeProvider>
