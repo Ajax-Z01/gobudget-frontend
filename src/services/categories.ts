@@ -1,10 +1,25 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+const getAuthHeaders = () => {
+  const token = Cookies.get("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 export const getCategories = async () => {
   try {
-    const response = await axios.get(`${API_URL}/categories`);
+    const response = await api.get("/categories", { headers: getAuthHeaders() });
+    console.log("🔍 Fetched categories:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -14,7 +29,7 @@ export const getCategories = async () => {
 
 export const createCategory = async (categoryData: any) => {
   try {
-    const response = await axios.post(`${API_URL}/categories`, categoryData);
+    const response = await api.post("/categories", categoryData, { headers: getAuthHeaders() });
     return response.data;
   } catch (error) {
     console.error("Error creating category:", error);

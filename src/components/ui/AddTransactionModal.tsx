@@ -2,24 +2,32 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useTheme } from "next-themes";
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 interface Transaction {
   note: string;
   amount: number;
   type: "Income" | "Expense";
+  category_id: number;
 }
 
 interface AddTransactionModalProps {
   onClose: () => void;
   onSave: (newTransaction: Transaction) => void;
+  categories: Category[];
 }
 
-const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSave }) => {
+const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSave, categories }) => {
   const { theme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState(theme);
   const [newTransaction, setNewTransaction] = useState<Transaction>({
     note: "",
     amount: 0,
     type: "Income",
+    category_id: categories.length > 0 ? categories[0].id : 0,
   });
 
   useEffect(() => {
@@ -45,6 +53,10 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
   const handleSave = () => {
     if (!newTransaction.note || newTransaction.amount <= 0) {
       alert("Please enter valid transaction details.");
+      return;
+    }
+    if (newTransaction.category_id === 0) {
+      alert("Please select a valid category.");
       return;
     }
     onSave(newTransaction);
@@ -80,6 +92,21 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           <option value="Income">Income</option>
           <option value="Expense">Expense</option>
         </select>
+
+        <select
+          name="category_id"
+          value={newTransaction.category_id}
+          onChange={handleChange}
+          className="modal-input"
+        >
+          <option value="">Select Category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
         <div className="button-wrapper">
           <button onClick={handleSave} className="save-button">Save</button>
           <button onClick={onClose} className="cancel-button">Cancel</button>
