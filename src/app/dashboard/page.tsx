@@ -217,3 +217,518 @@ export default function DashboardPage() {
     </div>
   );
 }
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getUser, logout } from "@/services/auth";
+import Image from "next/image";
+
+const DashboardPage = () => {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      {/* Sidebar for desktop */}
+      <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
+        <div className="flex flex-col flex-grow pt-5 bg-blue-700 dark:bg-gray-800 overflow-y-auto">
+          <div className="flex items-center flex-shrink-0 px-4">
+            <Image
+              src="/gobudget-logo.svg"
+              alt="GoBudget Logo"
+              width={40}
+              height={40}
+              style={{ width: "auto", height: "40px" }}
+            />
+            <span className="ml-2 text-xl font-semibold text-white">GoBudget</span>
+          </div>
+          <div className="mt-5 flex-1 flex flex-col">
+            <nav className="flex-1 px-2 pb-4 space-y-1">
+              <a
+                href="#"
+                className="bg-blue-800 dark:bg-gray-700 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+              >
+                <svg
+                  className="mr-3 h-6 w-6 text-blue-300 dark:text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                Dashboard
+              </a>
+
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+              >
+                <svg
+                  className="mr-3 h-6 w-6 text-blue-300 dark:text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Expenses
+              </a>
+
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+              >
+                <svg
+                  className="mr-3 h-6 w-6 text-blue-300 dark:text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                Budgets
+              </a>
+
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+              >
+                <svg
+                  className="mr-3 h-6 w-6 text-blue-300 dark:text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Reports
+              </a>
+
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+              >
+                <svg
+                  className="mr-3 h-6 w-6 text-blue-300 dark:text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                Settings
+              </a>
+            </nav>
+          </div>
+          <div className="flex-shrink-0 flex border-t border-blue-800 dark:border-gray-700 p-4">
+            <div className="flex items-center">
+              <div>
+                <div className="h-9 w-9 rounded-full bg-blue-600 dark:bg-gray-700 flex items-center justify-center text-white font-semibold text-lg">
+                  {user?.name?.charAt(0) || "U"}
+                </div>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-white">{user?.name || "User"}</p>
+                <button
+                  onClick={handleLogout}
+                  className="text-xs font-medium text-blue-300 dark:text-gray-400 hover:text-white"
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div className="md:hidden">
+        <div className="bg-blue-700 dark:bg-gray-800 px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center">
+            <Image
+              src="/gobudget-logo.svg"
+              alt="GoBudget Logo"
+              width={30}
+              height={30}
+              style={{ width: "auto", height: "30px" }}
+            />
+            <span className="ml-2 text-lg font-semibold text-white">GoBudget</span>
+          </div>
+          <button
+            type="button"
+            className="text-gray-200 hover:text-white focus:outline-none"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile menu panel */}
+        {mobileMenuOpen && (
+          <div className="bg-blue-700 dark:bg-gray-800 shadow-lg">
+            <div className="pt-2 pb-3 space-y-1">
+              <a
+                href="#"
+                className="bg-blue-800 dark:bg-gray-700 text-white block px-3 py-2 text-base font-medium"
+              >
+                Dashboard
+              </a>
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 block px-3 py-2 text-base font-medium"
+              >
+                Expenses
+              </a>
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 block px-3 py-2 text-base font-medium"
+              >
+                Budgets
+              </a>
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 block px-3 py-2 text-base font-medium"
+              >
+                Reports
+              </a>
+              <a
+                href="#"
+                className="text-white hover:bg-blue-600 dark:hover:bg-gray-700 block px-3 py-2 text-base font-medium"
+              >
+                Settings
+              </a>
+            </div>
+            <div className="pt-4 pb-3 border-t border-blue-800 dark:border-gray-700">
+              <div className="flex items-center px-4">
+                <div className="flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-blue-600 dark:bg-gray-700 flex items-center justify-center text-white font-semibold text-lg">
+                    {user?.name?.charAt(0) || "U"}
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium text-white">{user?.name || "User"}</div>
+                  <div className="text-sm font-medium text-blue-300 dark:text-gray-400">{user?.email || "user@example.com"}</div>
+                </div>
+              </div>
+              <div className="mt-3 px-2">
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-3 py-2 text-base font-medium text-white hover:bg-blue-600 dark:hover:bg-gray-700 rounded-md"
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="md:pl-64 flex flex-col flex-1">
+        <main className="flex-1">
+          <div className="py-6 px-4 sm:px-6 lg:px-8">
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
+            
+            {/* Dashboard content */}
+            <div className="mt-6">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Card 1 */}
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                  <div className="p-5">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                        <svg
+                          className="h-6 w-6 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Monthly Budget
+                          </dt>
+                          <dd>
+                            <div className="text-lg font-medium text-gray-900 dark:text-white">
+                              $5,000.00
+                            </div>
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                    <div className="text-sm">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        View all
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 2 */}
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                  <div className="p-5">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
+                        <svg
+                          className="h-6 w-6 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Income
+                          </dt>
+                          <dd>
+                            <div className="text-lg font-medium text-gray-900 dark:text-white">
+                              $3,200.00
+                            </div>
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                    <div className="text-sm">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        View all
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card 3 */}
+                <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                  <div className="p-5">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 bg-red-500 rounded-md p-3">
+                        <svg
+                          className="h-6 w-6 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                          />
+                        </svg>
+                      </div>
+                      <div className="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                            Expenses
+                          </dt>
+                          <dd>
+                            <div className="text-lg font-medium text-gray-900 dark:text-white">
+                              $1,800.00
+                            </div>
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-700 px-5 py-3">
+                    <div className="text-sm">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        View all
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent activity section */}
+            <div className="mt-8">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Activity</h2>
+              <div className="mt-4 bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {[1, 2, 3, 4, 5].map((item) => (
+                    <li key={item}>
+                      <a href="#" className="block hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <div className="px-4 py-4 sm:px-6">
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
+                              Transaction #{item}
+                            </div>
+                            <div className="ml-2 flex-shrink-0 flex">
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                Completed
+                              </span>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex justify-between">
+                            <div className="sm:flex">
+                              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <svg
+                                  className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-500"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                                <span>June {10 + item}, 2023</span>
+                              </div>
+                            </div>
+                            <div className="ml-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                              <svg
+                                className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-500"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              <span>${(Math.random() * 100).toFixed(2)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardPage;
