@@ -5,15 +5,17 @@ import { getUser } from "@/services/auth";
 import { getCategories } from "@/services/categories";
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction, getSummary } from "@/services/transactions";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Cookies from "js-cookie";
-import Switch from "@/components/ui/ThemeSwitcher";
-import EditTransactionModal from "@/components/ui/EditTransactionModal";
-import AddTransactionModal from "@/components/ui/AddTransactionModal";
+import Switch from "@/components/ui/theme-switcher";
+import EditTransactionModal from "@/components/modal/edit-transactionmodal";
+import AddTransactionModal from "@/components/modal/add-transaction-modal";
+import RecentActivity from "@/components/recent-activity";
 
-export default function DashboardPage() {
+const DashboardPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [user, setUser] = useState<{ email: string, name: string } | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [summary, setSummary] = useState({ total_income: 0, total_expense: 0, balance: 0 });
@@ -21,6 +23,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -36,7 +39,7 @@ export default function DashboardPage() {
 
         if (isMounted) {
           setUser(userData);
-          setTransactions(transactionsData);
+          setTransactions(transactionsData.slice(-5).reverse());
           setCategories(categoriesData);
           setSummary(summaryData);
         }
@@ -62,7 +65,7 @@ export default function DashboardPage() {
     } catch (err: any) {
       console.error("❌ Failed to fetch summary:", err.message || err);
     }
-  };  
+  };
 
   const handleLogout = async () => {
     try {
@@ -81,7 +84,7 @@ export default function DashboardPage() {
       console.error("❌ Logout failed:", err);
     }
   };
-
+  
   const handleCreateTransaction = async (newTransaction: any) => {
     if (!newTransaction.note || Number(newTransaction.amount) <= 0) {
       alert("Please enter valid transaction details.");
@@ -92,7 +95,7 @@ export default function DashboardPage() {
       const addedTransaction = await createTransaction({
         ...newTransaction,
         amount: parseFloat(newTransaction.amount.toString()),
-        category_id: Number(newTransaction.category_id), // Konversi ke number
+        category_id: Number(newTransaction.category_id),
       });
 
       setTransactions([...transactions, addedTransaction]);
@@ -115,7 +118,7 @@ export default function DashboardPage() {
     try {
       const sanitizedTransaction = {
         ...updatedTransaction,
-        category_id: Number(updatedTransaction.category_id), // Konversi ke number
+        category_id: Number(updatedTransaction.category_id),
       };
 
       await updateTransaction(sanitizedTransaction.id, sanitizedTransaction);
@@ -140,120 +143,6 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) return <p className="text-center text-lg">Loading...</p>;
-  if (error) return <p className="text-red-500 text-center">{error}</p>;
-
-  return (
-    <div className={`min-h-screen p-6 transition-all ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
-      <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Welcome, {user?.email || "Guest"}!</h1>
-          <Switch />
-        </div>
-        <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md mb-6 transition">
-          Logout
-        </button>
-        
-        <div className="mb-6 p-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg">
-          <h2 className="text-lg font-semibold">Summary</h2>
-          <p>Total Income: <span className="text-green-600 font-bold">${summary?.total_income?.toFixed(2) || "0.00"}</span></p>
-          <p>Total Expense: <span className="text-red-600 font-bold">${summary?.total_expense?.toFixed(2) || "0.00"}</span></p>
-          <p>Balance: <span className="font-bold">${summary?.balance?.toFixed(2) || "0.00"}</span></p>
-        </div>
-
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Transactions</h2>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition"
-          >
-            + Add Transaction
-          </button>
-        </div>
-
-        <div className={`${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"} p-4 rounded-lg shadow-md transition`}>
-          {transactions.length === 0 ? (
-            <p className="text-center text-gray-500 dark:text-gray-400">No transactions found.</p>
-          ) : (
-            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-              {transactions.map(tx => (
-                <li key={tx.id} className="flex justify-between items-center py-3">
-                  <div>
-                    <p className="font-medium">{tx.note}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{tx.amount} ({tx.type})</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">Category: {tx.Category?.name || "Uncategorized"}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleEditClick(tx)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition">
-                      Edit
-                    </button>
-                    <button onClick={() => handleDeleteTransaction(tx.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition">
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      {showAddModal && (
-        <AddTransactionModal
-          categories={categories}
-          onClose={() => setShowAddModal(false)}
-          onSave={handleCreateTransaction}
-        />
-      )}
-
-      {selectedTransaction && (
-        <EditTransactionModal
-          transaction={selectedTransaction}
-          categories={categories}
-          onClose={() => setSelectedTransaction(null)}
-          onSave={handleSaveTransaction}
-        />
-      )}
-    </div>
-  );
-}
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getUser, logout } from "@/services/auth";
-import Image from "next/image";
-
-const DashboardPage = () => {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await getUser();
-        setUser(userData);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -268,13 +157,13 @@ const DashboardPage = () => {
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
         <div className="flex flex-col flex-grow pt-5 bg-blue-700 dark:bg-gray-800 overflow-y-auto">
           <div className="flex items-center flex-shrink-0 px-4">
-            <Image
+            {/* <Image
               src="/gobudget-logo.svg"
               alt="GoBudget Logo"
               width={40}
               height={40}
               style={{ width: "auto", height: "40px" }}
-            />
+            /> */}
             <span className="ml-2 text-xl font-semibold text-white">GoBudget</span>
           </div>
           <div className="mt-5 flex-1 flex flex-col">
@@ -395,11 +284,11 @@ const DashboardPage = () => {
             <div className="flex items-center">
               <div>
                 <div className="h-9 w-9 rounded-full bg-blue-600 dark:bg-gray-700 flex items-center justify-center text-white font-semibold text-lg">
-                  {user?.name?.charAt(0) || "U"}
+                  {user?.name || "Guest"}
                 </div>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-white">{user?.name || "User"}</p>
+                <p className="text-sm font-medium text-white">{user?.email || "Guest"}</p>
                 <button
                   onClick={handleLogout}
                   className="text-xs font-medium text-blue-300 dark:text-gray-400 hover:text-white"
@@ -416,13 +305,13 @@ const DashboardPage = () => {
       <div className="md:hidden">
         <div className="bg-blue-700 dark:bg-gray-800 px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
-            <Image
+            {/* <Image
               src="/gobudget-logo.svg"
               alt="GoBudget Logo"
               width={30}
               height={30}
               style={{ width: "auto", height: "30px" }}
-            />
+            /> */}
             <span className="ml-2 text-lg font-semibold text-white">GoBudget</span>
           </div>
           <button
@@ -495,11 +384,11 @@ const DashboardPage = () => {
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <div className="h-10 w-10 rounded-full bg-blue-600 dark:bg-gray-700 flex items-center justify-center text-white font-semibold text-lg">
-                    {user?.name?.charAt(0) || "U"}
+                    {user?.name || "Guest"}
                   </div>
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-white">{user?.name || "User"}</div>
+                  <div className="text-base font-medium text-white">{user?.name || "Guest"}</div>
                   <div className="text-sm font-medium text-blue-300 dark:text-gray-400">{user?.email || "user@example.com"}</div>
                 </div>
               </div>
@@ -547,11 +436,11 @@ const DashboardPage = () => {
                       <div className="ml-5 w-0 flex-1">
                         <dl>
                           <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Monthly Budget
+                            Balance
                           </dt>
                           <dd>
                             <div className="text-lg font-medium text-gray-900 dark:text-white">
-                              $5,000.00
+                              ${summary?.balance?.toFixed(2) || "0.00"}
                             </div>
                           </dd>
                         </dl>
@@ -597,7 +486,7 @@ const DashboardPage = () => {
                           </dt>
                           <dd>
                             <div className="text-lg font-medium text-gray-900 dark:text-white">
-                              $3,200.00
+                              ${summary?.total_income?.toFixed(2) || "0.00"}
                             </div>
                           </dd>
                         </dl>
@@ -643,7 +532,7 @@ const DashboardPage = () => {
                           </dt>
                           <dd>
                             <div className="text-lg font-medium text-gray-900 dark:text-white">
-                              $1,800.00
+                              ${summary?.total_expense?.toFixed(2) || "0.00"}
                             </div>
                           </dd>
                         </dl>
@@ -665,65 +554,7 @@ const DashboardPage = () => {
             </div>
 
             {/* Recent activity section */}
-            <div className="mt-8">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Recent Activity</h2>
-              <div className="mt-4 bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
-                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {[1, 2, 3, 4, 5].map((item) => (
-                    <li key={item}>
-                      <a href="#" className="block hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <div className="px-4 py-4 sm:px-6">
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">
-                              Transaction #{item}
-                            </div>
-                            <div className="ml-2 flex-shrink-0 flex">
-                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                                Completed
-                              </span>
-                            </div>
-                          </div>
-                          <div className="mt-2 flex justify-between">
-                            <div className="sm:flex">
-                              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                                <svg
-                                  className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-500"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                <span>June {10 + item}, 2023</span>
-                              </div>
-                            </div>
-                            <div className="ml-2 flex items-center text-sm text-gray-500 dark:text-gray-400">
-                              <svg
-                                className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400 dark:text-gray-500"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              <span>${(Math.random() * 100).toFixed(2)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            <RecentActivity />  
           </div>
         </main>
       </div>
@@ -732,3 +563,77 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
+// return (
+//   <div className={`min-h-screen p-6 transition-all ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
+//     <div className="max-w-2xl mx-auto">
+//       <div className="flex justify-between items-center mb-6">
+//         <h1 className="text-2xl font-semibold">Welcome, {user?.email || "Guest"}!</h1>
+//         <Switch />
+//       </div>
+//       <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md mb-6 transition">
+//         Logout
+//       </button>
+      
+//       <div className="mb-6 p-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg">
+//         <h2 className="text-lg font-semibold">Summary</h2>
+//         <p>Total Income: <span className="text-green-600 font-bold">${summary?.total_income?.toFixed(2) || "0.00"}</span></p>
+//         <p>Total Expense: <span className="text-red-600 font-bold">${summary?.total_expense?.toFixed(2) || "0.00"}</span></p>
+//         <p>Balance: <span className="font-bold">${summary?.balance?.toFixed(2) || "0.00"}</span></p>
+//       </div>
+
+//       <div className="flex justify-between items-center mb-4">
+//         <h2 className="text-xl font-semibold">Transactions</h2>
+//         <button
+//           onClick={() => setShowAddModal(true)}
+//           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition"
+//         >
+//           + Add Transaction
+//         </button>
+//       </div>
+
+//       <div className={`${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"} p-4 rounded-lg shadow-md transition`}>
+//         {transactions.length === 0 ? (
+//           <p className="text-center text-gray-500 dark:text-gray-400">No transactions found.</p>
+//         ) : (
+//           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+//             {transactions.map(tx => (
+//               <li key={tx.id} className="flex justify-between items-center py-3">
+//                 <div>
+//                   <p className="font-medium">{tx.note}</p>
+//                   <p className="text-sm text-gray-500 dark:text-gray-400">{tx.amount} ({tx.type})</p>
+//                   <p className="text-xs text-gray-400 dark:text-gray-500">Category: {tx.Category?.name || "Uncategorized"}</p>
+//                 </div>
+//                 <div className="flex gap-2">
+//                   <button onClick={() => handleEditClick(tx)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded transition">
+//                     Edit
+//                   </button>
+//                   <button onClick={() => handleDeleteTransaction(tx.id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition">
+//                     Delete
+//                   </button>
+//                 </div>
+//               </li>
+//             ))}
+//           </ul>
+//         )}
+//       </div>
+//     </div>
+
+//     {showAddModal && (
+//       <AddTransactionModal
+//         categories={categories}
+//         onClose={() => setShowAddModal(false)}
+//         onSave={handleCreateTransaction}
+//       />
+//     )}
+
+//     {selectedTransaction && (
+//       <EditTransactionModal
+//         transaction={selectedTransaction}
+//         categories={categories}
+//         onClose={() => setSelectedTransaction(null)}
+//         onSave={handleSaveTransaction}
+//       />
+//     )}
+//   </div>
+// );

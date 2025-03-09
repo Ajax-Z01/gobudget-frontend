@@ -35,6 +35,8 @@ export const getTransactions = async (params: Record<string, any> = {}) => {
     }
 
     const response = await api.get("/transactions", { params });
+    
+    console.log("🔍 Fetched transactions:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error fetching transactions:", error.response?.data || error.message);

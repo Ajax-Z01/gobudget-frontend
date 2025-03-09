@@ -33,6 +33,7 @@ export const login = async (email: string, password: string) => {
 export const getUser = async () => {
   try {
     const response = await api.get("/user");
+    console.log("Fetched user:", response.data);
     return response.data;
   } catch (error: any) {
     console.error("Get user error:", error.response?.data);
