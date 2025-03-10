@@ -1,26 +1,113 @@
-@import "tailwindcss";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
 
+/* Default Theme (Light Mode) */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: #F4F4F4; /* Soft Gray */
+  --card-text: #333333; /* Deep Charcoal */
+  --border-color: #D1D5DB; /* Light Gray */
+
+  /* Custom Theme Colors */
+  --primary: #2ECC71; /* Emerald Green */
+  --secondary: #4A90E2; /* Royal Blue */
+  --tertiary: #FF6B6B; /* Sunset Orange */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Dark Mode */
+.dark {
+  --background: #252525; /* Deep Charcoal */
+  --foreground: #A3E4DB; /* Soft Mint */
+  --card-bg: #181818; /* Midnight Black */
+  --card-text: #A3E4DB; /* Soft Mint */
+  --border-color: #525252; /* Slate Gray */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Apply Global Styles */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+/* Smooth Theme Change */
+html.dark body {
+  transition: background-color 0.3s ease-in-out;
+}
+
+img {
+  transition: all 0.15s ease-in-out;
+}
+
+.dark img {
+  filter: invert(1);
+  transition: all 0.15s ease-in-out;
+}
+
+/* Reusable Card Styling */
+.card {
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 1px solid var(--border-color);
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Styling */
+.button {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.button-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.button-primary:hover {
+  background: #25a65b; /* Warna lebih gelap untuk hover */
+}
+
+.button-secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.button-secondary:hover {
+  background: #3a7ac1; /* Warna lebih gelap untuk hover */
+}
+
+.button-tertiary {
+  background: var(--tertiary);
+  color: #fff;
+}
+
+.button-tertiary:hover {
+  background: #e65b5b; /* Warna lebih gelap untuk hover */
+}
+
+/* Sidebar Transitions */
+.sidebar {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Saat dalam mode dark, pastikan efeknya smooth */
+.dark .sidebar {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Menubar Transitions */
+.menubar {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Saat dalam mode dark, pastikan efeknya smooth */
+.dark .menubar {
+  transition: background-color 0.3s ease-in-out;
 }

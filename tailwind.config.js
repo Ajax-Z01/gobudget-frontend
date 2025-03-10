@@ -1,8 +1,8 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-    darkMode: "class",
-    theme: {
-      extend: {},
-    },
-    plugins: [],
-  };
-  
+  darkMode: "class", // Harus pakai "class" bukan "media"
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};

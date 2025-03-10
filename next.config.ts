@@ -1,6 +1,8 @@
-import type { NextConfig } from "next";
-
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  compiler: {
+    styledComponents: true,
+  },
   async rewrites() {
     return [
       {
@@ -11,10 +13,4 @@ module.exports = {
   },
 };
 
-const nextConfig: NextConfig = {
-  compiler: {
-    styledComponents: true,
-  },
-};
-
-export default nextConfig;
+module.exports = nextConfig;
