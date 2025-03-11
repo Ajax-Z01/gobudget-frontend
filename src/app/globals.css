@@ -4,7 +4,7 @@
 
 /* Default Theme (Light Mode) */
 :root {
-  --background: #ffffff;
+  --background: #EDEFEF;
   --foreground: #171717;
   --card-bg: #F4F4F4; /* Soft Gray */
   --card-text: #333333; /* Deep Charcoal */
@@ -14,6 +14,10 @@
   --primary: #2ECC71; /* Emerald Green */
   --secondary: #4A90E2; /* Royal Blue */
   --tertiary: #FF6B6B; /* Sunset Orange */
+  --icon-color: #171717;
+  --logo-color: #171717;
+  --title-color: #171717;
+  --text-secondary: #6B7280; /* Tailwind Gray-500 */
 }
 
 /* Dark Mode */
@@ -23,14 +27,20 @@
   --card-bg: #181818; /* Midnight Black */
   --card-text: #A3E4DB; /* Soft Mint */
   --border-color: #525252; /* Slate Gray */
+  
+  /* Custom Theme Colors */
+  --icon-color: #2ECC71;
+  --logo-color: #EDEFEF;
+  --title-color: #EDEFEF;
+  --text-secondary: #9CA3AF; /* Tailwind Gray-400 */
 }
 
-/* Apply Global Styles */
+/* Global Styling */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease-in-out;
 }
 
 /* Smooth Theme Change */
@@ -38,13 +48,17 @@ html.dark body {
   transition: background-color 0.3s ease-in-out;
 }
 
-img {
+/* Logo Styling */
+.logo-sidebar, .logo-menubar {
   transition: all 0.15s ease-in-out;
 }
 
-.dark img {
+.dark .logo-sidebar {
+  filter: invert(0.53) sepia(1) saturate(3.1) hue-rotate(90deg);
+}
+
+.dark .logo-menubar {
   filter: invert(1);
-  transition: all 0.15s ease-in-out;
 }
 
 /* Reusable Card Styling */
@@ -52,9 +66,18 @@ img {
   background: var(--card-bg);
   color: var(--card-text);
   border: 1px solid var(--border-color);
-  padding: 0;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+
+.dark .card-title {
+  color: var(--primary);
 }
 
 /* Button Styling */
@@ -71,7 +94,7 @@ img {
 }
 
 .button-primary:hover {
-  background: #25a65b; /* Warna lebih gelap untuk hover */
+  background: #25a65b;
 }
 
 .button-secondary {
@@ -80,7 +103,7 @@ img {
 }
 
 .button-secondary:hover {
-  background: #3a7ac1; /* Warna lebih gelap untuk hover */
+  background: #3a7ac1;
 }
 
 .button-tertiary {
@@ -89,25 +112,82 @@ img {
 }
 
 .button-tertiary:hover {
-  background: #e65b5b; /* Warna lebih gelap untuk hover */
+  background: #e65b5b;
 }
 
-/* Sidebar Transitions */
-.sidebar {
-  transition: background-color 0.3s ease-in-out;
+/* Sidebar & Menubar Transitions */
+.dark .logo-sidebar {
+  filter: invert(0.53) sepia(1) saturate(3.1) hue-rotate(90deg);
+  transition: all 0.15s ease-in-out;
 }
 
-/* Saat dalam mode dark, pastikan efeknya smooth */
-.dark .sidebar {
-  transition: background-color 0.3s ease-in-out;
+.dark .logo-menubar {
+  filter: invert(1);
+  transition: all 0.15s ease-in-out;
 }
 
-/* Menubar Transitions */
-.menubar {
-  transition: background-color 0.3s ease-in-out;
+/* Title Styling */
+.title-name {
+  color: var(--foreground);
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 
-/* Saat dalam mode dark, pastikan efeknya smooth */
-.dark .menubar {
-  transition: background-color 0.3s ease-in-out;
+.dark .title-name {
+  color: var(--primary);
+}
+
+/* Table Styling */
+.table-container {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid var(--border-color);
+}
+
+.table-container thead {
+  background-color: var(--tertiary);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.table-container th, 
+.table-container td {
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid var(--border-color);
+}
+
+.table-container th {
+  color: var(--title-color);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.table-container tbody tr {
+  transition: background 0.3s;
+}
+
+.table-container tbody tr:hover {
+  background: var(--border-color);
+}
+
+
+/* Custom text colors */
+.text-primary {
+  color: var(--primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
 }

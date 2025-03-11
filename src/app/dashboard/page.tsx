@@ -108,7 +108,7 @@ const DashboardPage = () => {
         <main className="flex-1">
           <div className="py-6 px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
+            <h1 className="text-2xl font-semibold title-name">Dashboard</h1>
             {/* Theme switcher */}
             <Switch />
             </div>
@@ -117,7 +117,7 @@ const DashboardPage = () => {
             <SummaryCards summary={summary} />
 
             {/* Recent activity section */}
-            <RecentActivity />  
+            <RecentActivity />
           </div>
         </main>
       </div>

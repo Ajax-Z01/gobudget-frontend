@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface MobileMenuProps {
   user?: {
@@ -17,13 +18,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleLogout }) => {
       <div className="bg-[var(--primary)] px-4 py-3 flex items-center justify-between">
         <div className="flex items-center">
           <Image
+            className="logo-menubar"
             src="/gobudget-icon.svg"
             alt="GoBudget Logo"
             width={30}
             height={30}
             style={{ width: "auto", height: "30px" }}
           />
-          <span className="ml-2 text-lg font-semibold text-[var(--foreground)]">
+          <span className="ml-2 text-lg font-semibold text-[var(--logo-color)]">
             GoBudget
           </span>
         </div>
@@ -62,13 +64,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleLogout }) => {
         <div className="bg-[var(--card-bg)] shadow-lg">
           <div className="pt-2 pb-3 space-y-1">
             {["Dashboard", "Expenses", "Budgets", "Reports", "Settings"].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="text-[var(--foreground)] hover:bg-[var(--primary-light)] block px-3 py-2 text-base font-medium transition-all"
-              >
-                {item}
-              </a>
+              <Link key={item} href={`/${item.toLowerCase()}`}>
+                <span className="text-[var(--foreground)] hover:bg-[var(--primary-light)] block px-3 py-2 text-base font-medium transition-all cursor-pointer">
+                  {item}
+                </span>
+              </Link>
             ))}
           </div>
           <div className="pt-4 pb-3 border-t border-[var(--border-color)]">

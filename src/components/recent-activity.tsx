@@ -19,7 +19,7 @@ const RecentActivity = () => {
 
   return (
     <div className="mt-8">
-      <h2 className="text-lg font-medium text-[var(--foreground)]">Recent Activity</h2>
+              <h2 className="text-lg font-medium title-name">Recent Activity</h2>
       <div className="mt-4 card shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-[var(--border-color)]">
           {transactions.map((transaction, index) => (
@@ -27,8 +27,8 @@ const RecentActivity = () => {
               <a href="#" className="block hover:bg-[var(--border-color)] dark:hover:bg-[var(--border-color)] transition-all">
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium text-[var(--primary)] truncate">
-                      Transaction #{index + 1} | Category: {transaction.Category?.name || "Uncategorized"}
+                    <div className="text-sm font-medium card-title truncate">
+                      Transaction #{index + 1} | {transaction.Category?.name || "Uncategorized"}
                     </div>
                     <div className="ml-2 flex-shrink-0 flex">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[var(--primary)] text-black">

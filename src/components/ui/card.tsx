@@ -11,7 +11,7 @@ const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.El
         </div>
         <div className="ml-5 flex-1">
           <dl>
-            <dt className="text-sm font-medium truncate" style={{ color: "var(--card-text)" }}>{title}</dt>
+            <dt className="text-sm font-medium truncate card-title">{title}</dt>
             <dd className="text-lg font-medium" style={{ color: "var(--card-text)" }}>{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(Number(value))}</dd>
           </dl>
         </div>
