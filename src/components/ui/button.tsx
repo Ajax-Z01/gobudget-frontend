@@ -6,7 +6,7 @@ type ButtonProps = {
   variant?: "primary" | "secondary" | "danger";
 };
 
-const Button: React.FC<ButtonProps> = ({ children, onClick, variant = "primary" }) => {
+export const Button: React.FC<ButtonProps> = ({ children, onClick, variant = "primary" }) => {
   const baseStyles = "px-4 py-2 rounded-md font-semibold focus:outline-none transition";
   const variantStyles = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",

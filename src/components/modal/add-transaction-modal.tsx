@@ -18,6 +18,7 @@ interface AddTransactionModalProps {
   onClose: () => void;
   onSave: (newTransaction: Transaction) => void;
   categories: Category[];
+  refreshData: () => Promise<void>;
 }
 
 const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSave, categories }) => {

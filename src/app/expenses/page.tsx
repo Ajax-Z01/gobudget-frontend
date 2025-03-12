@@ -2,21 +2,14 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { getUser } from "@/services/auth";
-import { getCategories } from "@/services/categories";
-import { getTransactions, createTransaction, updateTransaction, deleteTransaction, getSummary } from "@/services/transactions";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Cookies from "js-cookie";
 import Switch from "@/components/ui/theme-switcher";
-import EditTransactionModal from "@/components/modal/edit-transactionmodal";
-import AddTransactionModal from "@/components/modal/add-transaction-modal";
-import RecentActivity from "@/components/recent-activity";
-import SummaryCards from "@/components/summary-cards";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 import RecentExpense from "@/components/recent-expense";
 
-const DashboardPage = () => {
+const ExpensesPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
   const [user, setUser] = useState<{ email: string, name: string } | undefined>(undefined);
@@ -102,4 +95,5 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default ExpensesPage;
+

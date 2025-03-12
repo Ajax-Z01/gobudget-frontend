@@ -20,6 +20,7 @@ interface EditTransactionModalProps {
   categories: Category[];
   onClose: () => void;
   onSave: (updatedTransaction: Transaction) => void;
+  refreshData: () => Promise<void>;
 }
 
 const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction, categories, onClose, onSave }) => {

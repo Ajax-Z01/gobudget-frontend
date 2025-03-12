@@ -1,23 +1,13 @@
 import { useEffect, useState } from "react";
 import { getTransactions } from "@/services/transactions";
 
-interface Transaction {
-  id: number;
-  type: string;
-  amount: number;
-  updated_at: string;
-  Category?: {
-    name: string;
-  };
-}
-
 const RecentExpense = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const transactionsData: Transaction[] = await getTransactions();
+        const transactionsData = await getTransactions();
         
         const filteredTransactions = transactionsData
           .filter((transaction) => transaction.type === "Expense")
@@ -51,7 +41,7 @@ const RecentExpense = () => {
               <tr key={transaction.id}>
                 <td>{index + 1}</td>
                 <td>
-                  {transaction.Category?.name || "Uncategorized"}
+                  {transaction.category.name || "Uncategorized"}
                 </td>
                 <td>
                   {new Date(transaction.updated_at).toLocaleDateString("en-GB", {

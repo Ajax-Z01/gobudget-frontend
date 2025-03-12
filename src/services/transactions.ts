@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { Transaction, TransactionParams } from "@/types/type";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
@@ -28,14 +29,9 @@ api.interceptors.response.use(
   }
 );
 
-export const getTransactions = async (params: Record<string, any> = {}) => {
+export const getTransactions = async (params: TransactionParams = {}): Promise<Transaction[]> => {
   try {
-    if (typeof params !== "object" || params === null) {
-      throw new TypeError("Params must be an object");
-    }
-
     const response = await api.get("/transactions", { params });
-    
     console.log("🔍 Fetched transactions:", response.data);
     return response.data;
   } catch (error: any) {
@@ -44,14 +40,9 @@ export const getTransactions = async (params: Record<string, any> = {}) => {
   }
 };
 
-export const createTransaction = async (transactionData: Record<string, any>) => {
+export const createTransaction = async (transactionData: Omit<Transaction, "id" | "created_at" | "updated_at">): Promise<Transaction> => {
   try {
-    if (!transactionData || typeof transactionData !== "object") {
-      throw new TypeError("Transaction data must be an object");
-    }
-
     console.log("🔍 Creating transaction with data:", transactionData);
-
     const response = await api.post("/transactions", transactionData);
     return response.data;
   } catch (error: any) {
@@ -60,14 +51,9 @@ export const createTransaction = async (transactionData: Record<string, any>) =>
   }
 };
 
-export const getTransactionById = async (id: number) => {
+export const getTransactionById = async (id: number): Promise<Transaction> => {
   try {
-    if (!id) {
-      throw new Error("Transaction ID is required");
-    }
-
     console.log("🔍 Fetching transaction with ID:", id);
-
     const response = await api.get(`/transactions/${id}`);
     return response.data;
   } catch (error: any) {
@@ -76,14 +62,9 @@ export const getTransactionById = async (id: number) => {
   }
 };
 
-export const updateTransaction = async (id: number, updatedData: Record<string, any>) => {
+export const updateTransaction = async (id: number, updatedData: Partial<Omit<Transaction, "id" | "created_at" | "updated_at">>): Promise<Transaction> => {
   try {
-    if (!id || !updatedData || typeof updatedData !== "object") {
-      throw new TypeError("Invalid transaction update data");
-    }
-
     console.log("🔍 Updating transaction:", { id, updatedData });
-
     const response = await api.put(`/transactions/${id}`, updatedData);
     return response.data;
   } catch (error: any) {
@@ -92,14 +73,9 @@ export const updateTransaction = async (id: number, updatedData: Record<string, 
   }
 };
 
-export const deleteTransaction = async (id: number) => {
+export const deleteTransaction = async (id: number): Promise<{ message: string }> => {
   try {
-    if (!id) {
-      throw new Error("Transaction ID is required for deletion");
-    }
-
     console.log("🔍 Soft deleting transaction with ID:", id);
-
     const response = await api.put(`/transactions/delete/${id}`);
     return response.data;
   } catch (error: any) {
@@ -108,14 +84,9 @@ export const deleteTransaction = async (id: number) => {
   }
 };
 
-export const restoreTransaction = async (id: number) => {
+export const restoreTransaction = async (id: number): Promise<{ message: string }> => {
   try {
-    if (!id) {
-      throw new Error("Transaction ID is required for restoration");
-    }
-
     console.log("🔍 Restoring transaction with ID:", id);
-
     const response = await api.put(`/transactions/restore/${id}`);
     return response.data;
   } catch (error: any) {
@@ -124,10 +95,9 @@ export const restoreTransaction = async (id: number) => {
   }
 };
 
-export const getSummary = async () => {
+export const getSummary = async (): Promise<{ total_income: number; total_expense: number; balance: number }> => {
   try {
     console.log("🔍 Fetching summary");
-
     const response = await api.get("/summary");
     return response.data;
   } catch (error: any) {

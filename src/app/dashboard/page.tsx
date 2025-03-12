@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import Switch from "@/components/ui/theme-switcher";
-import EditTransactionModal from "@/components/modal/edit-transactionmodal";
+import EditTransactionModal from "@/components/modal/edit-transaction-modal";
 import AddTransactionModal from "@/components/modal/add-transaction-modal";
 import RecentActivity from "@/components/recent-activity";
 import SummaryCards from "@/components/summary-cards";
@@ -126,3 +126,4 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
