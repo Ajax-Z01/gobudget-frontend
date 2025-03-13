@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useTheme } from "next-themes";
-
-interface Category {
-  id: number;
-  name: string;
-}
-
-interface Transaction {
-  note: string;
-  amount: number;
-  type: "Income" | "Expense";
-  category_id: number;
-}
+import { Category, Transaction } from "@/types/type";
 
 interface AddTransactionModalProps {
   onClose: () => void;
@@ -25,10 +14,16 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
   const { theme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState(theme);
   const [newTransaction, setNewTransaction] = useState<Transaction>({
+    id: 0,
     note: "",
     amount: 0,
     type: "Income",
     category_id: categories.length > 0 ? categories[0].id : 0,
+    category: { id: 0, name: "" },
+    user_id: 0,
+    created_at: "",
+    updated_at: "",
+    deleted_at: null,
   });
 
   useEffect(() => {
@@ -48,8 +43,10 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
     setNewTransaction((prev) => ({
       ...prev,
       [name]: name === "amount" ? parseFloat(value) || 0 : value,
+      created_at: prev.created_at,
+      deleted_at: prev.deleted_at,
     }));
-  };
+  };  
 
   const handleSave = () => {
     if (!newTransaction.note || newTransaction.amount <= 0) {
@@ -60,9 +57,16 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
       alert("Please select a valid category.");
       return;
     }
-    onSave(newTransaction);
+  
+    const transactionToSave = {
+      ...newTransaction,
+      created_at: newTransaction.created_at,
+      deleted_at: newTransaction.deleted_at,
+    };
+  
+    onSave(transactionToSave);
     onClose();
-  };
+  };  
 
   return (
     <StyledWrapper>
@@ -73,6 +77,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           name="note"
           value={newTransaction.note}
           onChange={handleChange}
+          onFocus={(e) => e.target.select()} 
           className="modal-input"
           placeholder="Note"
         />
@@ -81,6 +86,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           name="amount"
           value={newTransaction.amount}
           onChange={handleChange}
+          onFocus={(e) => e.target.select()}
           className="modal-input"
           placeholder="Amount"
         />

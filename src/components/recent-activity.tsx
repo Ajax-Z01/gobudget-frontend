@@ -48,7 +48,7 @@ const RecentActivity = () => {
                             clipRule="evenodd" />
                         </svg>
                         <span>
-                          {new Date(transaction.updated_at).toLocaleDateString("en-GB", {
+                          {new Date(transaction.created_at).toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "long",
                             year: "numeric",

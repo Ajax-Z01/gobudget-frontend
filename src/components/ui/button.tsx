@@ -4,9 +4,10 @@ type ButtonProps = {
   children: React.ReactNode;
   onClick: () => void;
   variant?: "primary" | "secondary" | "danger";
+  className?: string;
 };
 
-export const Button: React.FC<ButtonProps> = ({ children, onClick, variant = "primary" }) => {
+export const Button: React.FC<ButtonProps> = ({ children, onClick, variant = "primary", className = "" }) => {
   const baseStyles = "px-4 py-2 rounded-md font-semibold focus:outline-none transition";
   const variantStyles = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",
@@ -15,7 +16,7 @@ export const Button: React.FC<ButtonProps> = ({ children, onClick, variant = "pr
   };
 
   return (
-    <button className={`${baseStyles} ${variantStyles[variant]}`} onClick={onClick}>
+    <button className={`${baseStyles} ${variantStyles[variant]} ${className}`} onClick={onClick}>
       {children}
     </button>
   );

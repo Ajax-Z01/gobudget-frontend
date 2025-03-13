@@ -63,7 +63,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ user, handleLogout }) => {
       {mobileMenuOpen && (
         <div className="bg-[var(--card-bg)] shadow-lg">
           <div className="pt-2 pb-3 space-y-1">
-            {["Dashboard", "Expenses", "Budgets", "Reports", "Settings"].map((item) => (
+            {["Dashboard", "Transactions", "Budgets", "Reports", "Settings"].map((item) => (
               <Link key={item} href={`/${item.toLowerCase()}`}>
                 <span className="text-[var(--foreground)] hover:bg-[var(--primary-light)] block px-3 py-2 text-base font-medium transition-all cursor-pointer">
                   {item}

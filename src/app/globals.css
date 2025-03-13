@@ -1,43 +1,49 @@
 @import "tailwindcss";
-
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 
-/* Default Theme (Light Mode) */
+/* ========================================= */
+/* 🎨 THEME COLORS */
+/* ========================================= */
+
+/* Light Mode */
 :root {
   --background: #EDEFEF;
   --foreground: #171717;
-  --card-bg: #F4F4F4; /* Soft Gray */
-  --card-text: #333333; /* Deep Charcoal */
-  --border-color: #D1D5DB; /* Light Gray */
+  --card-bg: #F4F4F4; 
+  --card-text: #333333;
+  --border-color: #D1D5DB;
 
   /* Custom Theme Colors */
-  --primary: #2ECC71; /* Emerald Green */
-  --secondary: #4A90E2; /* Royal Blue */
-  --tertiary: #FF6B6B; /* Sunset Orange */
+  --primary: #2ECC71; 
+  --secondary: #4A90E2; 
+  --tertiary: #FF6B6B;
   --icon-color: #171717;
   --logo-color: #171717;
   --title-color: #171717;
-  --text-secondary: #6B7280; /* Tailwind Gray-500 */
+  --text-secondary: #6B7280;
 }
 
 /* Dark Mode */
 .dark {
-  --background: #252525; /* Deep Charcoal */
-  --foreground: #A3E4DB; /* Soft Mint */
-  --card-bg: #181818; /* Midnight Black */
-  --card-text: #A3E4DB; /* Soft Mint */
-  --border-color: #525252; /* Slate Gray */
-  
+  --background: #252525;
+  --foreground: #A3E4DB;
+  --card-bg: #181818;
+  --card-text: #A3E4DB;
+  --border-color: #525252;
+
   /* Custom Theme Colors */
   --icon-color: #2ECC71;
   --logo-color: #EDEFEF;
   --title-color: #EDEFEF;
-  --text-secondary: #9CA3AF; /* Tailwind Gray-400 */
+  --text-secondary: #9CA3AF;
 }
 
-/* Global Styling */
+/* ========================================= */
+/* 🖥️ GLOBAL STYLING */
+/* ========================================= */
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -50,8 +56,12 @@ html.dark body {
   transition: background-color 0.3s ease-in-out;
 }
 
-/* Logo Styling */
-.logo-sidebar, .logo-menubar {
+/* ========================================= */
+/* 🔥 LOGO & TITLE STYLING */
+/* ========================================= */
+
+.logo-sidebar, 
+.logo-menubar {
   transition: all 0.15s ease-in-out;
 }
 
@@ -63,7 +73,21 @@ html.dark body {
   filter: invert(1);
 }
 
-/* Reusable Card Styling */
+/* Title Styling */
+.title-name {
+  color: var(--foreground);
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.dark .title-name {
+  color: var(--primary);
+}
+
+/* ========================================= */
+/* 📦 CARD STYLING */
+/* ========================================= */
+
 .card {
   background: var(--card-bg);
   color: var(--card-text);
@@ -82,7 +106,10 @@ html.dark body {
   color: var(--primary);
 }
 
-/* Button Styling */
+/* ========================================= */
+/* 🎛️ BUTTON STYLING */
+/* ========================================= */
+
 .button {
   padding: 10px 16px;
   border-radius: 6px;
@@ -117,29 +144,10 @@ html.dark body {
   background: #e65b5b;
 }
 
-/* Sidebar & Menubar Transitions */
-.dark .logo-sidebar {
-  filter: invert(0.53) sepia(1) saturate(3.1) hue-rotate(90deg);
-  transition: all 0.15s ease-in-out;
-}
+/* ========================================= */
+/* 📊 TABLE STYLING */
+/* ========================================= */
 
-.dark .logo-menubar {
-  filter: invert(1);
-  transition: all 0.15s ease-in-out;
-}
-
-/* Title Styling */
-.title-name {
-  color: var(--foreground);
-  font-weight: bold;
-  font-size: 1.5rem;
-}
-
-.dark .title-name {
-  color: var(--primary);
-}
-
-/* Table Styling */
 .table-container {
   overflow-x: auto;
   border-radius: 10px;
@@ -180,8 +188,10 @@ html.dark body {
   background: var(--border-color);
 }
 
+/* ========================================= */
+/* 🔍 TEXT COLORS */
+/* ========================================= */
 
-/* Custom text colors */
 .text-primary {
   color: var(--primary);
 }
@@ -191,5 +201,91 @@ html.dark body {
 }
 
 .text-tertiary {
-  color: var(--text-tertiary);
+  color: var(--tertiary);
+}
+
+/* ========================================= */
+/* 🔲 MODAL STYLING */
+/* ========================================= */
+
+/* Modal Wrapper */
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal Box */
+.modal {
+  background: var(--background);
+  color: var(--foreground);
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Modal Heading */
+.modal-heading {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--foreground);
+}
+
+.dark .modal-heading {
+  color: var(--primary);
+}
+
+/* Input Field */
+.modal-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: var(--background);
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+
+/* Button Wrapper */
+.button-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Save Button */
+.save-button {
+  background-color: green;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background: darkgreen;
+}
+
+/* Cancel Button */
+.cancel-button {
+  background-color: red;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background: darkred;
 }

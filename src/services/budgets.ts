@@ -28,12 +28,18 @@ api.interceptors.response.use(
 export const getBudgets = async (): Promise<Budget[]> => {
   try {
     const response = await api.get("/budgets");
-    return response.data;
+    console.log("✅ API Response:", response.data);
+    return response.data.map((budget: Budget) => ({
+      ...budget,
+      spent: budget.spent || 0,
+    }));
   } catch (error: any) {
     console.error("❌ Error fetching budgets:", error.response?.data || error.message);
     throw error;
   }
 };
+
+
 
 export const createBudget = async (budgetData: NewBudget) => {
     try {
@@ -57,7 +63,7 @@ export const updateBudget = async (id: number, updatedData: Partial<Budget>): Pr
 
 export const deleteBudget = async (id: number): Promise<{ message: string }> => {
   try {
-    const response = await api.delete(`/budgets/${id}`);
+    const response = await api.put(`/budgets/delete/${id}`);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error deleting budget:", error.response?.data || error.message);

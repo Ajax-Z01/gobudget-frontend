@@ -1,7 +1,4 @@
-export enum TransactionType {
-  INCOME = "Income",
-  EXPENSE = "Expense",
-}
+export type TransactionType = "Income" | "Expense";
   
 export interface Transaction {
   id: number;
@@ -9,6 +6,11 @@ export interface Transaction {
   amount: number;
   note?: string;
   category_id: number;
+  category: {
+    id: number;
+    name: string;
+  };
+  user_id: number;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -27,14 +29,24 @@ export type Summary = {
   balance: number;
 };
 
+export type Category = {
+  id: number;
+  name: string;
+}
+
 export interface Budget {
   id: number;
+  user_id: number;
   category_id: number;
+  category: {
+    id: number;
+    name: string;
+  };
   amount: number;
+  spent: number;
   created_at: string;
   updated_at: string;
-  deleted_at?: string | null;
-}  
+}
 
 export type NewBudget = {
   category_id: number;
