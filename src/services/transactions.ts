@@ -95,13 +95,19 @@ export const restoreTransaction = async (id: number): Promise<{ message: string 
   }
 };
 
-export const getSummary = async (): Promise<{ total_income: number; total_expense: number; balance: number }> => {
+export const getSummary = async (): Promise<{
+  trend: { month: string; total_income: number; total_expense: number }[];
+  total_income: number;
+  total_expense: number;
+  balance: number;
+}> => {
   try {
-    console.log("🔍 Fetching summary");
     const response = await api.get("/summary");
+    console.log("🔍 Fetching summary", response.data);
     return response.data;
   } catch (error: any) {
     console.error("❌ Error fetching summary:", error.response?.data || error.message);
     throw error;
   }
 };
+

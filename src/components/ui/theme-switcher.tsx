@@ -19,8 +19,6 @@ const Switch = () => {
   const toggleTheme = () => {
     setTheme(isDark ? "light" : "dark");
   };
-  
-  const Placeholder = () => <div style={{ width: 60, height: 34 }} />;
     
   return (
     <StyledWrapper>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import { useTheme } from "next-themes";
 import { Category, Transaction } from "@/types/type";
 
@@ -26,13 +25,13 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
     deleted_at: transaction?.deleted_at || null,
   });
 
-  if (!transaction) return null; // Jika tidak ada transaksi, modal tidak ditampilkan
+  if (!transaction) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEditedTransaction((prev) => ({
       ...prev,
-      [name]: name === "amount" ? Number(value) : value, // Pastikan amount tetap number
+      [name]: name === "amount" ? Number(value) : value,
     }));
   };
 
@@ -81,8 +80,8 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
             </option>
           ))}
         </select>
-        <div className="button-wrapper">
-          <button onClick={handleSave} className="save-button">Save</button>
+        <div className="button-wrapper flex justify-between mt-4">
+          <button onClick={handleSave} className="edit-button">Edit</button>
           <button onClick={onClose} className="cancel-button">Cancel</button>
         </div>
       </div>

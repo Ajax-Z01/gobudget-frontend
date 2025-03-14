@@ -8,7 +8,8 @@ import Switch from "@/components/ui/theme-switcher";
 import BudgetList from "@/components/budget-list";
 import { getUser } from "@/services/auth";
 import { getBudgets, createBudget } from "@/services/budgets";
-import { Budget, NewBudget } from "@/types/type";
+import { getCategories } from "@/services/categories";
+import { Budget, NewBudget, Category } from "@/types/type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -20,25 +21,37 @@ export default function BudgetsPage() {
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [amount, setAmount] = useState<number | "">("");
   const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
         const userData = await getUser();
-        setUser(userData);
-  
+        if (isMounted) setUser(userData);
+
         const fetchedBudgets = await getBudgets();
-        setBudgets(fetchedBudgets);
+        if (isMounted) setBudgets(fetchedBudgets);
+        
+        const fetchedCategories = await getCategories();
+        if (isMounted) setCategories(fetchedCategories);
       } catch (err: any) {
         console.error("❌ Error fetching data:", err.message || err);
-        setError("Failed to fetch data. Redirecting to login...");
-        router.replace("/login");
+        if (isMounted) {
+          setError("Failed to fetch data. Redirecting to login...");
+          setTimeout(() => router.replace("/login"), 2000);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
-  
+
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [router]);
 
   const handleLogout = async () => {
@@ -63,26 +76,25 @@ export default function BudgetsPage() {
 
   const handleCreateBudget = async () => {
     if (!categoryId || !amount) return;
-  
+
     try {
       const newBudget: NewBudget = {
         category_id: categoryId,
         amount,
       };
-  
+
       await createBudget(newBudget);
-  
-      // Panggil ulang `getBudgets()` agar data `spent` terbaru diperoleh
+
       const updatedBudgets = await getBudgets();
       setBudgets(updatedBudgets);
-  
+
       setCategoryId("");
       setAmount("");
     } catch (error) {
       console.error("❌ Error creating budget:", error);
       setError("Failed to create budget.");
     }
-  };  
+  };
 
   if (loading) {
     return (
@@ -93,42 +105,54 @@ export default function BudgetsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      {/* Sidebar for desktop */}
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col">
+      {/* Sidebar untuk Desktop */}
       <Sidebar user={user} handleLogout={handleLogout} />
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       <MobileMenu user={user} handleLogout={handleLogout} />
 
-      <div className="md:pl-64 flex flex-col flex-1">
-        <main className="flex-1">
-          <div className="py-6 px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold title-name">Budgets</h1>
-              {/* Theme switcher */}
-              <Switch />
-            </div>
-
-            {/* Form Input Budget */}
-            <div className="pt-8 mb-4 flex gap-2">
-              <Input
-                type="number"
-                placeholder="Category ID"
-                value={categoryId}
-                onChange={(e) => setCategoryId(Number(e.target.value) || "")}
-              />
-              <Input
-                type="number"
-                placeholder="Amount"
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value) || "")}
-              />
-              <Button onClick={handleCreateBudget}>Add Budget</Button>
-            </div>
-
-            {/* Budget List */}
-            <BudgetList budgets={budgets} setBudgets={setBudgets} />
+      <div className="md:pl-64 flex flex-1 flex-col">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-row justify-between items-center">
+            <h1 className="text-2xl font-semibold title-name">Budgets</h1>
+            <Switch />
           </div>
+
+          {/* Form Input Budget */}
+          <div className="mt-8 mb-4 flex flex-col sm:flex-row gap-2 p-2">
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(Number(e.target.value) || "")}
+              className="w-full sm:w-auto px-4 py-2 border rounded-md bg-white dark:bg-gray-800 dark:text-white"
+            >
+              <option value="">Select Category</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+
+            <Input
+              type="number"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(Number(e.target.value) || "")}
+              className="w-full sm:w-auto"
+            />
+
+            <Button onClick={handleCreateBudget} className="w-full sm:w-auto">
+              Add Budget
+            </Button>
+          </div>
+
+          {/* Budget List */}
+          {error ? (
+            <p className="text-red-500 text-center">{error}</p>
+          ) : (
+            <BudgetList budgets={budgets} setBudgets={setBudgets} />
+          )}
         </main>
       </div>
     </div>

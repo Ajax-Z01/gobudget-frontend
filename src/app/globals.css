@@ -16,13 +16,20 @@
   --border-color: #D1D5DB;
 
   /* Custom Theme Colors */
-  --primary: #2ECC71; 
+  --primary: #2ECC71;
   --secondary: #4A90E2; 
   --tertiary: #FF6B6B;
+  --primary-hover: #27AE60;
+  --secondary-hover: #3A7CC2;
+  --tertiary-hover: #E05858;
+  
   --icon-color: #171717;
   --logo-color: #171717;
   --title-color: #171717;
   --text-secondary: #6B7280;
+  --text-white: #EDEFEF;
+  --text-black: #171717;
+  --button-text: #0A0A0A;
 }
 
 /* Dark Mode */
@@ -34,6 +41,12 @@
   --border-color: #525252;
 
   /* Custom Theme Colors */
+  --primary: #2ECC71;
+  --secondary: #4A90E2; 
+  --tertiary: #FF6B6B;
+  --primary-hover: #27AE60;
+  --secondary-hover: #3A7CC2;
+  --tertiary-hover: #E05858;
   --icon-color: #2ECC71;
   --logo-color: #EDEFEF;
   --title-color: #EDEFEF;
@@ -77,7 +90,6 @@ html.dark body {
 .title-name {
   color: var(--foreground);
   font-weight: bold;
-  font-size: 1.5rem;
 }
 
 .dark .title-name {
@@ -91,7 +103,7 @@ html.dark body {
 .card {
   background: var(--card-bg);
   color: var(--card-text);
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -264,28 +276,54 @@ html.dark body {
 
 /* Save Button */
 .save-button {
-  background-color: green;
-  color: white;
-  padding: 8px 12px;
-  border: none;
+  background-color: var(--primary);
+  color: var(--button-text);
+  padding: 8px 16px;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: bold;
 }
 
 .save-button:hover {
-  background: darkgreen;
+  background: var(--primary-hover);
+  color: var(--text-white);
+  border-color: var(--primary-hover);
+}
+
+/* Edit Button */
+.edit-button {
+  background-color: var(--secondary);
+  color: var(--button-text);
+  padding: 8px 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: bold;
+}
+
+.edit-button:hover {
+  background: var(--secondary-hover);
+  color: var(--text-white);
+  border-color: var(--secondary-hover);
 }
 
 /* Cancel Button */
 .cancel-button {
-  background-color: red;
-  color: white;
+  background-color: var(--tertiary);
+  color: var(--button-text);
   padding: 8px 12px;
-  border: none;
+  border: 2px solid var(--border-color);
   border-radius: 5px;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: bold;
 }
 
 .cancel-button:hover {
-  background: darkred;
+  background: var(--tertiary-hover);
+  color: var(--text-white);
+  border-color: var(--tertiary-hover);
 }

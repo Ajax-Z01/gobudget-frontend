@@ -1,4 +1,5 @@
 import React, { JSX } from "react";
+import Link from "next/link";
 
 const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.Element }> = ({ title, value, color, icon }) => {
   return (
@@ -18,9 +19,9 @@ const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.El
       </div>
       <div className="px-5 py-3" style={{ backgroundColor: "var(--border-color)" }}>
         <div className="text-sm">
-          <a href="#" className="font-medium hover:underline" style={{ color: "var(--card-text)" }}>
+          <Link href="/reports" className="font-medium hover:underline" style={{ color: "var(--card-text)" }}>
             View all
-          </a>
+          </Link>
         </div>
       </div>
     </div>

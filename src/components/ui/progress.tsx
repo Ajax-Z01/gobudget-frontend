@@ -8,9 +8,14 @@ interface ProgressProps {
 
 export const Progress = ({ value, className }: ProgressProps) => {
   return (
-    <div className={cn("w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3", className)}>
+    <div
+      className={cn(
+        "w-full bg-[var(--background)] border border-[var(--border)] rounded-full h-3",
+        className
+      )}
+    >
       <div
-        className="h-full bg-blue-500 rounded-full transition-all"
+        className="h-full bg-[var(--secondary)] rounded-full transition-all duration-300 ease-in-out"
         style={{ width: `${value}%` }}
       />
     </div>

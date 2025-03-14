@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import { useTheme } from "next-themes";
 import { Category, Transaction } from "@/types/type";
 
@@ -12,7 +11,6 @@ interface AddTransactionModalProps {
 
 const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSave, categories }) => {
   const { theme } = useTheme();
-  const [currentTheme, setCurrentTheme] = useState(theme);
   const [newTransaction, setNewTransaction] = useState<Transaction>({
     id: 0,
     note: "",
@@ -27,10 +25,6 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
   });
 
   useEffect(() => {
-    setCurrentTheme(theme);
-  }, [theme]);
-
-  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -43,10 +37,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
     setNewTransaction((prev) => ({
       ...prev,
       [name]: name === "amount" ? parseFloat(value) || 0 : value,
-      created_at: prev.created_at,
-      deleted_at: prev.deleted_at,
     }));
-  };  
+  };
 
   const handleSave = () => {
     if (!newTransaction.note || newTransaction.amount <= 0) {
@@ -57,27 +49,20 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
       alert("Please select a valid category.");
       return;
     }
-  
-    const transactionToSave = {
-      ...newTransaction,
-      created_at: newTransaction.created_at,
-      deleted_at: newTransaction.deleted_at,
-    };
-  
-    onSave(transactionToSave);
+    onSave(newTransaction);
     onClose();
-  };  
+  };
 
   return (
-    <StyledWrapper>
-      <StyledModal data-theme={currentTheme}>
+    <div className="modal-wrapper">
+      <div className="modal" data-theme={theme}>
         <p className="modal-heading">Add Transaction</p>
         <input
           type="text"
           name="note"
           value={newTransaction.note}
           onChange={handleChange}
-          onFocus={(e) => e.target.select()} 
+          onFocus={(e) => e.target.select()}
           className="modal-input"
           placeholder="Note"
         />
@@ -99,7 +84,6 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           <option value="Income">Income</option>
           <option value="Expense">Expense</option>
         </select>
-
         <select
           name="category_id"
           value={newTransaction.category_id}
@@ -113,94 +97,13 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
             </option>
           ))}
         </select>
-
-        <div className="button-wrapper">
+        <div className="button-wrapper flex justify-between mt-4">
           <button onClick={handleSave} className="save-button">Save</button>
           <button onClick={onClose} className="cancel-button">Cancel</button>
         </div>
-      </StyledModal>
-    </StyledWrapper>
+      </div>
+    </div>
   );
 };
-
-const StyledWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const StyledModal = styled.div`
-  background: var(--bg-color);
-  color: var(--text-color);
-  padding: 20px;
-  border-radius: 10px;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease-in-out;
-
-  &[data-theme="dark"] {
-    --bg-color: #1e293b;
-    --text-color: white;
-  }
-
-  &[data-theme="light"] {
-    --bg-color: white;
-    --text-color: black;
-  }
-
-  .modal-heading {
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .modal-input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background: var(--bg-color);
-    color: var(--text-color);
-    border-color: var(--text-color);
-  }
-
-  .button-wrapper {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .save-button {
-    background-color: green;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background: darkgreen;
-    }
-  }
-
-  .cancel-button {
-    background-color: red;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background: darkred;
-    }
-  }
-`;
 
 export default AddTransactionModal;

@@ -166,7 +166,7 @@ const TransactionsPage = () => {
             </div>
 
             {/* Add Transaction Button */}
-            <div className="my-4">
+            <div className="mt-8 p-2">
               <Button onClick={() => setShowAddModal(true)}>Add Transaction</Button>
             </div>
 
@@ -176,7 +176,6 @@ const TransactionsPage = () => {
             ) : (
               <TransactionList
                 transactions={transactions}
-                setTransactions={setTransactions}
                 onEdit={handleEditTransaction}
                 onDelete={handleDeleteTransaction}
               />

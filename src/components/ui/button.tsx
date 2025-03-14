@@ -8,12 +8,12 @@ type ButtonProps = {
 };
 
 export const Button: React.FC<ButtonProps> = ({ children, onClick, variant = "primary", className = "" }) => {
-  const baseStyles = "px-4 py-2 rounded-md font-semibold focus:outline-none transition";
+  const baseStyles = "px-4 py-2 rounded-md font-semibold focus:outline-none transition text-[var(--button-text)] hover:text-[var(--text-white)] border border-[var(--foreground)] cursor-pointer";
   const variantStyles = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white",
-    secondary: "bg-gray-600 hover:bg-gray-700 text-white",
-    danger: "bg-red-600 hover:bg-red-700 text-white",
-  };
+    primary: "bg-[var(--primary)] hover:bg-[var(--primary-hover)]",
+    secondary: "bg-[var(--secondary)] hover:bg-[var(--secondary-hover)]",
+    danger: "bg-[var(--tertiary)] hover:bg-[var(--tertiary-hover)]",
+  };  
 
   return (
     <button className={`${baseStyles} ${variantStyles[variant]} ${className}`} onClick={onClick}>
