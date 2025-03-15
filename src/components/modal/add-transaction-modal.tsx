@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Category, Transaction } from "@/types/type";
+import { useSettings } from "@/app/context/SettingContext";
+import { translations } from "@/utils/translations";
 
 interface AddTransactionModalProps {
   onClose: () => void;
@@ -11,6 +13,9 @@ interface AddTransactionModalProps {
 
 const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSave, categories }) => {
   const { theme } = useTheme();
+  const { language } = useSettings();
+  const t = translations[language === "English" ? "en" : "id"];
+
   const [newTransaction, setNewTransaction] = useState<Transaction>({
     id: 0,
     note: "",
@@ -42,11 +47,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
 
   const handleSave = () => {
     if (!newTransaction.note || newTransaction.amount <= 0) {
-      alert("Please enter valid transaction details.");
+      alert(t.enter_valid_transaction);
       return;
     }
     if (newTransaction.category_id === 0) {
-      alert("Please select a valid category.");
+      alert(t.select_valid_category);
       return;
     }
     onSave(newTransaction);
@@ -56,7 +61,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
   return (
     <div className="modal-wrapper">
       <div className="modal" data-theme={theme}>
-        <p className="modal-heading">Add Transaction</p>
+        <p className="modal-heading">{t.add_transaction}</p>
         <input
           type="text"
           name="note"
@@ -64,7 +69,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           onChange={handleChange}
           onFocus={(e) => e.target.select()}
           className="modal-input"
-          placeholder="Note"
+          placeholder={t.transaction_note}
         />
         <input
           type="number"
@@ -73,7 +78,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           onChange={handleChange}
           onFocus={(e) => e.target.select()}
           className="modal-input"
-          placeholder="Amount"
+          placeholder={t.transaction_amount}
         />
         <select
           name="type"
@@ -81,8 +86,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           onChange={handleChange}
           className="modal-input"
         >
-          <option value="Income">Income</option>
-          <option value="Expense">Expense</option>
+          <option value="Income">{t.income}</option>
+          <option value="Expense">{t.expense}</option>
         </select>
         <select
           name="category_id"
@@ -90,7 +95,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           onChange={handleChange}
           className="modal-input"
         >
-          <option value="">Select Category</option>
+          <option value="">{t.select_category}</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -98,8 +103,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           ))}
         </select>
         <div className="button-wrapper flex justify-between mt-4">
-          <button onClick={handleSave} className="save-button">Save</button>
-          <button onClick={onClose} className="cancel-button">Cancel</button>
+          <button onClick={handleSave} className="save-button">{t.save}</button>
+          <button onClick={onClose} className="cancel-button">{t.cancel}</button>
         </div>
       </div>
     </div>

@@ -12,9 +12,14 @@ import { getCategories } from "@/services/categories";
 import { Budget, NewBudget, Category } from "@/types/type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { translations } from "@/utils/translations";
+import { useSettings } from "@/app/context/SettingContext";
 
 export default function BudgetsPage() {
   const router = useRouter();
+  const { language } = useSettings();
+  const t = translations[language === "English" ? "en" : "id"];
+
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +44,7 @@ export default function BudgetsPage() {
       } catch (err: any) {
         console.error("❌ Error fetching data:", err.message || err);
         if (isMounted) {
-          setError("Failed to fetch data. Redirecting to login...");
+          setError(t.fetch_error);
           setTimeout(() => router.replace("/login"), 2000);
         }
       } finally {
@@ -52,7 +57,7 @@ export default function BudgetsPage() {
     return () => {
       isMounted = false;
     };
-  }, [router]);
+  }, [router, t]);
 
   const handleLogout = async () => {
     try {
@@ -70,7 +75,7 @@ export default function BudgetsPage() {
       router.replace("/login");
     } catch (err) {
       console.error("❌ Logout failed:", err);
-      setError("Logout failed. Please try again.");
+      setError(t.logout_failed);
     }
   };
 
@@ -92,7 +97,7 @@ export default function BudgetsPage() {
       setAmount("");
     } catch (error) {
       console.error("❌ Error creating budget:", error);
-      setError("Failed to create budget.");
+      setError(t.create_budget_error);
     }
   };
 
@@ -115,7 +120,7 @@ export default function BudgetsPage() {
       <div className="md:pl-64 flex flex-1 flex-col">
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-row justify-between items-center">
-            <h1 className="text-2xl font-semibold title-name">Budgets</h1>
+            <h1 className="text-2xl font-semibold title-name">{t.budgets}</h1>
             <Switch />
           </div>
 
@@ -126,7 +131,7 @@ export default function BudgetsPage() {
               onChange={(e) => setCategoryId(Number(e.target.value) || "")}
               className="w-full sm:w-auto px-4 py-2 border rounded-md bg-white dark:bg-gray-800 dark:text-white"
             >
-              <option value="">Select Category</option>
+              <option value="">{t.select_category}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -136,14 +141,14 @@ export default function BudgetsPage() {
 
             <Input
               type="number"
-              placeholder="Amount"
+              placeholder={t.amount}
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value) || "")}
               className="w-full sm:w-auto"
             />
 
             <Button onClick={handleCreateBudget} className="w-full sm:w-auto">
-              Add Budget
+              {t.add_budget}
             </Button>
           </div>
 

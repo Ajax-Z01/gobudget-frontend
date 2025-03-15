@@ -3,30 +3,29 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { getUser } from "@/services/auth";
 import { getCategories } from "@/services/categories";
-import { getTransactions, createTransaction, updateTransaction, deleteTransaction, getSummary } from "@/services/transactions";
+import { getTransactions, getSummary } from "@/services/transactions";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Cookies from "js-cookie";
+import { useSettings } from "@/app/context/SettingContext";
+import { translations } from "@/utils/translations";
 import Switch from "@/components/ui/theme-switcher";
-import EditTransactionModal from "@/components/modal/edit-transaction-modal";
-import AddTransactionModal from "@/components/modal/add-transaction-modal";
-import RecentActivity from "@/components/recent-activity";
 import SummaryCards from "@/components/summary-cards";
+import RecentActivity from "@/components/recent-activity";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 
 const DashboardPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
-  const [user, setUser] = useState<{ email: string, name: string } | undefined>(undefined);
+  const { language } = useSettings();
+  const t = translations[language === "English" ? "en" : "id"];
+
+  const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
   const [categories, setCategories] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [summary, setSummary] = useState({ total_income: 0, total_expense: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -60,15 +59,6 @@ const DashboardPage = () => {
       isMounted = false;
     };
   }, [router]);
-  
-  const fetchSummary = async () => {
-    try {
-      const summaryData = await getSummary();
-      setSummary(summaryData);
-    } catch (err: any) {
-      console.error("❌ Failed to fetch summary:", err.message || err);
-    }
-  };
 
   const handleLogout = async () => {
     try {
@@ -108,11 +98,11 @@ const DashboardPage = () => {
         <main className="flex-1">
           <div className="py-6 px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold title-name">Dashboard</h1>
-            {/* Theme switcher */}
-            <Switch />
+              <h1 className="text-2xl font-semibold title-name">{t.dashboard}</h1>
+              {/* Theme switcher */}
+              <Switch />
             </div>
-            
+
             {/* Dashboard content */}
             <SummaryCards summary={summary} />
 
@@ -126,4 +116,3 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
-

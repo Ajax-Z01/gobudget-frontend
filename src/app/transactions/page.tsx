@@ -14,10 +14,14 @@ import { Button } from "@/components/ui/button";
 import { Transaction, Category } from "@/types/type";
 import AddTransactionModal from "@/components/modal/add-transaction-modal";
 import EditTransactionModal from "@/components/modal/edit-transaction-modal";
+import { translations } from "@/utils/translations";
 
 const TransactionsPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
+  const [language, setLanguage] = useState("en"); // Default English, bisa diubah jika ada state global
+  const t = translations[language === "English" ? "en" : "id"];
+
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +30,6 @@ const TransactionsPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
   
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -34,7 +37,7 @@ const TransactionsPage = () => {
         setUser(userData);
       } catch (err: any) {
         console.error("❌ Error fetching user:", err.message || err);
-        setError("Failed to fetch user. Redirecting to login...");
+        setError(`${t.error_fetching_user}`);
         router.replace("/login");
       } finally {
         setLoading(false);
@@ -55,7 +58,7 @@ const TransactionsPage = () => {
         setCategories(categoriesData);
       } catch (err) {
         console.error("❌ Error fetching data:", err);
-        setError("Failed to load data.");
+        setError(`${t.error_loading_data}`);
       }
     };
 
@@ -78,13 +81,13 @@ const TransactionsPage = () => {
       router.replace("/login");
     } catch (err) {
       console.error("❌ Logout failed:", err);
-      setError("Logout failed. Please try again.");
+      setError(`${t.logout_failed}`);
     }
   };
 
   const handleCreateTransaction = async (newTransaction: any) => {
     if (!newTransaction.note || Number(newTransaction.amount) <= 0) {
-      alert("Please enter valid transaction details.");
+      alert(`${t.enter_valid_transaction}`);
       return;
     }
 
@@ -99,7 +102,7 @@ const TransactionsPage = () => {
       setShowAddModal(false);
     } catch (err) {
       console.error("❌ Failed to add transaction:", err);
-      alert("Failed to add transaction. Please try again.");
+      alert(`${t.failed_to_add_transaction}`);
     }
   };
   
@@ -108,7 +111,7 @@ const TransactionsPage = () => {
   };
   
   const handleSaveTransaction = async (updatedTransaction: any) => {
-    console.log("Updating Transaction:", updatedTransaction);
+    console.log(`${t.updating_transaction}:`, updatedTransaction);
 
     try {
       const sanitizedTransaction = {
@@ -122,19 +125,19 @@ const TransactionsPage = () => {
       
     } catch (err) {
       console.error("❌ Failed to update transaction:", err);
-      alert("Failed to update transaction. Please try again.");
+      alert(`${t.failed_to_update_transaction}`);
     }
   };
   
   const handleDeleteTransaction = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this transaction?")) return;
+    if (!confirm(`${t.confirm_delete_transaction}`)) return;
 
     try {
       await deleteTransaction(id);
       setTransactions(transactions.filter((t) => t.id !== id));
     } catch (err) {
       console.error("❌ Failed to delete transaction:", err);
-      alert("Failed to delete transaction.");
+      alert(`${t.failed_to_delete_transaction}`);
     }
   };
   
@@ -144,7 +147,7 @@ const TransactionsPage = () => {
       setTransactions(transactionsData);
     } catch (err) {
       console.error("❌ Error refreshing transactions:", err);
-      setError("Failed to refresh transactions.");
+      setError(`${t.failed_to_refresh_transactions}`);
     }
   };
 
@@ -160,14 +163,14 @@ const TransactionsPage = () => {
         <main className="flex-1">
           <div className="py-6 px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold title-name">Transactions</h1>
+              <h1 className="text-2xl font-semibold title-name">{t.transactions}</h1>
               {/* Theme switcher */}
               <Switch />
             </div>
 
             {/* Add Transaction Button */}
             <div className="mt-8 p-2">
-              <Button onClick={() => setShowAddModal(true)}>Add Transaction</Button>
+              <Button onClick={() => setShowAddModal(true)}>{t.add_expense}</Button>
             </div>
 
             {/* Transaction List Section */}

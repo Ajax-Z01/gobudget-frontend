@@ -9,27 +9,51 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import Papa from "papaparse";
-import { Download } from "lucide-react"; // Tambahkan icon download
+import { Download } from "lucide-react";
+import { useSettings } from "@/app/context/SettingContext";
+import { getExchangeRates } from "@/services/exchangeRates";
+import { translations } from "@/utils/translations"
 
 export default function ReportsPage() {
   const router = useRouter();
+  const { language,currency } = useSettings();
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState({ total_income: 0, total_expense: 0, balance: 0 });
   const [trendData, setTrendData] = useState<{ month: string; total_income: number; total_expense: number }[]>([]);
+  const [exchangeRate, setExchangeRate] = useState(1);
+  const t = translations[language === "English" ? "en" : "id"];
+  const localeMap: Record<string, string> = {
+    English: "en-US",
+    Bahasa: "id-ID",
+  };
+  const currentLocale = localeMap[language] || "en-US";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const userData = await getUser();
         setUser(userData);
-        
+  
         const summaryData = await getSummary();
         setSummary(summaryData);
-        setTrendData(summaryData.trend || []);
+  
+        const convertedTrend = summaryData.trend.map(item => ({
+          ...item,
+          total_income: item.total_income * exchangeRate,
+          total_expense: item.total_expense * exchangeRate,
+          balance: (item.total_income - item.total_expense) * exchangeRate
+        }));
+        
+        setTrendData(convertedTrend);
+  
+        const rates = await getExchangeRates("USD");
+        if (rates && rates[currency]) {
+          setExchangeRate(rates[currency]);
+        }
       } catch (err: any) {
-        console.error("❌ Error fetching user data:", err.message || err);
+        console.error("❌ Error fetching data:", err.message || err);
         setError("Failed to fetch data. Redirecting to login...");
         router.replace("/login");
       } finally {
@@ -37,8 +61,20 @@ export default function ReportsPage() {
       }
     };
     fetchData();
-  }, [router]);
+  }, [router, currency, exchangeRate]);  
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("id-ID", { 
+      style: "currency", 
+      currency 
+    }).format(Math.round(amount * exchangeRate));
+  };
   
+  const formatMonth = (dateString: string) => {
+    const date = new Date(dateString + "-01");
+    return date.toLocaleString("en-US", { month: "short", year: "numeric" });
+  };
+
   const handleLogout = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
@@ -81,7 +117,7 @@ export default function ReportsPage() {
       </div>
     );
   }
-  
+
   if (error) {
     return <div className="text-center mt-10 text-error">{error}</div>;
   }
@@ -95,61 +131,96 @@ export default function ReportsPage() {
         <main className="flex-1">
           <div className="py-6 px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl font-semibold title-name">Reports</h1>
+              <h1 className="text-2xl font-semibold title-name">{t.reports}</h1>
               <Switch />
             </div>
-            
+
             {/* Financial Summary */}
             <div className="mt-8">
-              <h2 className="text-2xl font-semibold mb-6 title-name">Financial Summary</h2>
+              <h2 className="text-xl font-semibold mb-6 title-name">{t.financial_summary}</h2>
 
               {/* Export CSV Button */}
               <button 
                 onClick={handleExportCSV} 
                 className="mb-4 flex items-center gap-2 px-4 py-2 bg-primary text-[var(--text-foreground)] rounded-lg hover:bg-primary/90 transition cursor-pointer"
               >
-                <Download size={18} /> Export CSV
+                <Download size={18} /> {t.export_csv}
               </button>
 
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 border border-[var(--border-color)] bg-[var(--primary)] rounded-lg">
-                  <h2 className="text-lg font-medium text-[var(--text-black)]">Total Income</h2>
+                  <h2 className="text-lg font-medium text-[var(--text-black)]">{t.total_income}</h2>
                   <p className="text-2xl font-bold text-[var(--text-black)]">
-                    Rp {summary.total_income.toLocaleString("id-ID")}
+                    {formatCurrency(summary.total_income)}
                   </p>
                 </div>
 
                 <div className="p-4 border border-[var(--border-color)] bg-[var(--tertiary)] rounded-lg">
-                  <h2 className="text-lg font-medium text-[var(--text-black)]">Total Expense</h2>
+                  <h2 className="text-lg font-medium text-[var(--text-black)]">{t.total_expense}</h2>
                   <p className="text-2xl font-bold text-[var(--text-black)]">
-                    Rp {summary.total_expense.toLocaleString("id-ID")}
+                    {formatCurrency(summary.total_expense)}
                   </p>
                 </div>
 
                 <div className="p-4 border border-[var(--border-color)] bg-[var(--secondary)] rounded-lg">
-                  <h2 className="text-lg font-medium text-[var(--text-black)]">Final Balance</h2>
+                  <h2 className="text-lg font-medium text-[var(--text-black)]">{t.final_balance}</h2>
                   <p className="text-2xl font-bold text-[var(--text-black)]">
-                    Rp {summary.balance.toLocaleString("id-ID")}
+                    {formatCurrency(summary.balance)}
                   </p>
                 </div>
               </div>
             </div>
-            
+
             {/* Trend Chart */}
             <div className="mt-10">
-              <h2 className="text-2xl font-semibold mb-4 title-name">Financial Trend</h2>
-              <div className="w-full h-80 bg-card p-4 rounded-lg">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trendData}>
-                    <XAxis dataKey="month" stroke="#888" />
-                    <YAxis stroke="#888" />
-                    <Tooltip />
-                    <CartesianGrid stroke="#ddd" strokeDasharray="5 5" />
-                    <Line type="monotone" dataKey="total_income" stroke="#2ECC71" strokeWidth={2} name="Income" />
-                    <Line type="monotone" dataKey="total_expense" stroke="#FF6B6B" strokeWidth={2} name="Expense" />
-                  </LineChart>
-                </ResponsiveContainer>
+              <h2 className="text-xl font-semibold mb-4 title-name">{t.financial_trend}</h2>
+              <div className="w-full h-80 bg-[var(--card-bg)] border-2 border-[var(--border-color)] p-4 rounded-lg">
+                {trendData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={trendData}>
+                      <XAxis dataKey="month" stroke="var(--foreground)" tickFormatter={formatMonth} />
+                      <YAxis 
+                        stroke="var(--foreground)" 
+                        tickFormatter={(value) => new Intl.NumberFormat(currentLocale, { notation: "compact" }).format(value)}
+                      />
+                      <Tooltip 
+                        formatter={(value: number) => formatCurrency(value)}
+                        labelFormatter={(label: string) => formatMonth(label)}
+                        contentStyle={{ backgroundColor: "var(--card-bg)", borderRadius: "8px", border: "1px solid var(--primary)" }} 
+                        wrapperStyle={{ borderRadius: "8px" }} 
+                        labelStyle={{ color: "var(--primary)", fontWeight: "bold" }} 
+                      />
+                      <CartesianGrid stroke="var(--secondary)" strokeDasharray="3 3" />
+                      <Line 
+                        type="monotone" 
+                        dataKey="total_income" 
+                        stroke="var(--primary)" 
+                        strokeWidth={2} 
+                        name="Income" 
+                        dot={{ r: 4 }} 
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="total_expense" 
+                        stroke="var(--tertiary)" 
+                        strokeWidth={2} 
+                        name="Expense" 
+                        dot={{ r: 4 }} 
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="balance" 
+                        stroke="var(--secondary)"
+                        strokeWidth={2} 
+                        name="Balance" 
+                        dot={{ r: 4 }} 
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-center text-gray-400">No Data Available</p>
+                )}
               </div>
             </div>
           </div>
