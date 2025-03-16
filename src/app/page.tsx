@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -15,18 +14,16 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4 sm:p-6">
       {/* Header */}
-      <header className="flex justify-between items-center w-full py-4">
+      <header className="flex justify-between items-center w-full py-2 px-2">
         <div className="flex items-center gap-2">
           <Image
             src="/gobudget-logo.svg"
             alt="GoBudget Logo"
             width={40}
             height={40}
-            style={{ width: "auto", height: "40px" }}
+            style={{ width: "auto", height: "70px" }}
+            className="invert"
           />
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-            GoBudget
-          </span>
         </div>
         <nav className="hidden sm:flex gap-6">
           <a href="/features" className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400">
@@ -42,7 +39,7 @@ export default function HomePage() {
         <div className="flex gap-3">
           <Link 
             href="/login" 
-            className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 hidden sm:block"
+            className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-4 py-2 hidden sm:block"
           >
             Sign In
           </Link>
@@ -129,10 +126,11 @@ export default function HomePage() {
               alt="GoBudget Logo"
               width={30}
               height={30}
-              style={{ width: "auto", height: "30px" }}
+              style={{ width: "auto", height: "40px" }}
+              className="invert"
             />
             <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              © 2023 GoBudget. All rights reserved.
+              © 2025 GoBudget. All rights reserved.
             </span>
           </div>
           

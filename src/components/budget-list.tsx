@@ -5,6 +5,7 @@ import ProgressBar from "@/components/progress-bar";
 import Button from "@/components/ui/button";
 import { useSettings } from "@/app/context/SettingContext";
 import { translations } from "@/utils/translations";
+import { getTranslatedCategory } from "@/utils/categoryTranslations";
 
 interface BudgetListProps {
   budgets: Budget[];
@@ -50,10 +51,10 @@ export default function BudgetList({ budgets, setBudgets }: BudgetListProps) {
 
   return (
     <div className="p-2">
-      <h2 className="text-xl font-semibold mb-4 title-name">{t.budgets}</h2>
+      <h2 className="text-xl font-semibold mb-4 title-name">{t.budgets_list}</h2>
       {budgets.map((budget) => (
         <div key={budget.id} className="p-3 border-2 border-[var(--border-color)] rounded-lg mb-4">
-          <p className="text-sm font-medium">{t.category}: {budget.category?.name || t.uncategorized}</p>
+          <p className="text-sm font-medium">{t.category}: {getTranslatedCategory(budget.category?.name || t.uncategorized, language)}</p>
           <ProgressBar totalSpent={budget.spent} budgetAmount={budget.amount} currency={currency} />
 
           <div className="flex flex-col sm:flex-row gap-2 mt-3">

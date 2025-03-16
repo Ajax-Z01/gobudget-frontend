@@ -5,27 +5,33 @@ import { getExchangeRates } from "@/services/exchangeRates";
 import { useSettings } from "@/app/context/SettingContext";
 import { translations } from "@/utils/translations";
 
+
 type TransactionListProps = {
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
   onDelete: (id: number) => void;
 };
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
-  });
-};
-
 const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit, onDelete }) => {
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
   const { currency, language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
+  const localeMap: Record<string, string> = {
+    English: "en-US",
+    Bahasa: "id-ID",
+  };
+  const currentLocale = localeMap[language] || "en-US";
+  
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString(currentLocale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  };
 
   useEffect(() => {
     const fetchRates = async () => {
@@ -42,7 +48,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
 
   return (
     <div className="mt-4 p-2">
-      <h2 className="text-lg font-medium title-name">{t.transactions}</h2>
+      <h2 className="text-lg font-medium title-name">{t.transactions_list}</h2>
       <div className="mt-4 card shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-[var(--border-color)]">
           {transactions.length > 0 ? (
@@ -67,7 +73,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
                             : "bg-[var(--tertiary)] text-[var(--text-black)]"
                         }`}
                       >
-                        {transaction.type === "Income" ? t.total_income : t.total_expense}
+                        {transaction.type === "Income" ? t.income : t.expense}
                       </span>
                     </div>
 

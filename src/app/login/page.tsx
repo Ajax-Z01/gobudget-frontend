@@ -39,7 +39,7 @@ const LoginPage = () => {
             width={60} 
             height={60}
             style={{ width: "auto", height: "60px" }}
-            className="mx-auto"
+            className="mx-auto invert"
           />
         </Link>
         <h2 className="mt-3 text-center text-3xl font-extrabold text-gray-900 dark:text-white">

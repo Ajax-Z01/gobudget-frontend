@@ -27,6 +27,7 @@ export const translations = {
     date: "Date",
     note: "Note",
     add_expense: "Add Expense",
+    transactions_list: "Transaction List",
 
     // Budgets Page
     budgets: "Budgets",
@@ -34,6 +35,8 @@ export const translations = {
     progress: "Progress",
     budget_suggestion: "Budget Suggestion",
     add_budget: "Add Budget",
+    used: "Used",
+    budgets_list: "Budget List",
 
     // Recent Activity
     recent_activity: "Recent Activity",
@@ -104,6 +107,7 @@ export const translations = {
     date: "Tanggal",
     note: "Catatan",
     add_expense: "Tambah Pengeluaran",
+    transactions_list: "Daftar Transaksi",
 
     // Halaman Anggaran
     budgets: "Anggaran",
@@ -111,6 +115,8 @@ export const translations = {
     progress: "Progres",
     budget_suggestion: "Saran Anggaran",
     add_budget: "Tambah Anggaran",
+    used: "Digunakan",
+    budgets_list: "Daftar Anggaran",
 
     // Aktivitas Terbaru
     recent_activity: "Aktivitas Terbaru",

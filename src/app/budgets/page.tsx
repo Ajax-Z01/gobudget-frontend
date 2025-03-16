@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { translations } from "@/utils/translations";
 import { useSettings } from "@/app/context/SettingContext";
+import { getTranslatedCategory } from "@/utils/categoryTranslations";
 
 export default function BudgetsPage() {
   const router = useRouter();
@@ -129,12 +130,12 @@ export default function BudgetsPage() {
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(Number(e.target.value) || "")}
-              className="w-full sm:w-auto px-4 py-2 border rounded-md bg-white dark:bg-gray-800 dark:text-white"
+              className="w-full sm:w-auto px-4 py-2 border rounded-md text-[var(--card-text)] bg-[var(--background)]"
             >
               <option value="">{t.select_category}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {getTranslatedCategory(category.name || t.uncategorized, language)}
                 </option>
               ))}
             </select>

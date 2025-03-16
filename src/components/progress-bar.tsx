@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { getExchangeRates } from "@/services/exchangeRates";
+import { useSettings } from "@/app/context/SettingContext";
+import { translations } from "@/utils/translations";
 
 interface ProgressBarProps {
   totalSpent: number;
@@ -10,6 +12,8 @@ interface ProgressBarProps {
 
 const ProgressBar = ({ totalSpent, budgetAmount, currency }: ProgressBarProps) => {
   const [exchangeRate, setExchangeRate] = useState(1);
+  const { language } = useSettings();
+  const t = translations[language === "English" ? "en" : "id"];
 
   useEffect(() => {
     const fetchRates = async () => {
@@ -28,7 +32,7 @@ const ProgressBar = ({ totalSpent, budgetAmount, currency }: ProgressBarProps) =
   return (
     <div className="w-full">
       <p className="text-sm mb-1">
-        Used: {new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(convertedSpent)} / {new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(convertedBudget)}
+        {t.used}: {new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(convertedSpent)} / {new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(convertedBudget)}
       </p>
       <Progress value={progress} className="h-3 bg-gray-200 dark:bg-gray-700" />
     </div>

@@ -15,11 +15,13 @@ import { Transaction, Category } from "@/types/type";
 import AddTransactionModal from "@/components/modal/add-transaction-modal";
 import EditTransactionModal from "@/components/modal/edit-transaction-modal";
 import { translations } from "@/utils/translations";
+import { useSettings } from "@/app/context/SettingContext";
+import { getTranslatedCategory } from "@/utils/categoryTranslations";
 
 const TransactionsPage = () => {
   const router = useRouter();
   const { theme } = useTheme();
-  const [language, setLanguage] = useState("en"); // Default English, bisa diubah jika ada state global
+  const { language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
 
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
@@ -47,23 +49,37 @@ const TransactionsPage = () => {
     fetchUser();
   }, [router]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [transactionsData, categoriesData] = await Promise.all([
-          getTransactions(),
-          getCategories(),
-        ]);
-        setTransactions(transactionsData);
-        setCategories(categoriesData);
-      } catch (err) {
-        console.error("❌ Error fetching data:", err);
-        setError(`${t.error_loading_data}`);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const [transactionsData, categoriesData] = await Promise.all([
+        getTransactions(),
+        getCategories(),
+      ]);
+      
+      const translatedTransactions = transactionsData.map((tx: Transaction) => ({
+        ...tx,
+        category: {
+          ...tx.category,
+          name: getTranslatedCategory(tx.category?.name || "Unknown", language),
+        },
+      }));
 
+      const translatedCategories = categoriesData.map((cat: Category) => ({
+        ...cat,
+        name: getTranslatedCategory(cat.name, language),
+      }));
+
+      setTransactions(translatedTransactions);
+      setCategories(translatedCategories);
+    } catch (err) {
+      console.error("❌ Error fetching data:", err);
+      setError(`${t.error_loading_data}`);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [language]);
 
   const handleLogout = async () => {
     try {
@@ -92,11 +108,17 @@ const TransactionsPage = () => {
     }
 
     try {
-      const addedTransaction = await createTransaction({
-        ...newTransaction,
-        amount: parseFloat(newTransaction.amount.toString()),
-        category_id: Number(newTransaction.category_id),
-      });
+      const addedTransaction = {
+        ...await createTransaction({
+          ...newTransaction,
+          amount: parseFloat(newTransaction.amount.toString()),
+          category_id: Number(newTransaction.category_id),
+        }),
+        category: {
+          ...newTransaction.category,
+          name: getTranslatedCategory(newTransaction.category?.name || "Unknown", language),
+        },
+      };
 
       setTransactions([...transactions, addedTransaction]);
       setShowAddModal(false);
@@ -142,21 +164,12 @@ const TransactionsPage = () => {
   };
   
   const refreshData = async () => {
-    try {
-      const transactionsData = await getTransactions();
-      setTransactions(transactionsData);
-    } catch (err) {
-      console.error("❌ Error refreshing transactions:", err);
-      setError(`${t.failed_to_refresh_transactions}`);
-    }
+    await fetchData();
   };
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      {/* Sidebar for desktop */}
       <Sidebar user={user} handleLogout={handleLogout} />
-
-      {/* Mobile menu */}
       <MobileMenu user={user} handleLogout={handleLogout} />
 
       <div className="md:pl-64 flex flex-col flex-1">
@@ -164,16 +177,13 @@ const TransactionsPage = () => {
           <div className="py-6 px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-semibold title-name">{t.transactions}</h1>
-              {/* Theme switcher */}
               <Switch />
             </div>
 
-            {/* Add Transaction Button */}
             <div className="mt-8 p-2">
               <Button onClick={() => setShowAddModal(true)}>{t.add_expense}</Button>
             </div>
 
-            {/* Transaction List Section */}
             {error ? (
               <p className="text-red-500">{error}</p>
             ) : (
@@ -187,24 +197,8 @@ const TransactionsPage = () => {
         </main>
       </div>
 
-      {showAddModal && (
-        <AddTransactionModal
-          categories={categories}
-          onClose={() => setShowAddModal(false)}
-          onSave={handleCreateTransaction}
-          refreshData={refreshData}
-        />
-      )}
-      
-      {selectedTransaction && (
-        <EditTransactionModal
-          transaction={selectedTransaction}
-          categories={categories}
-          onClose={() => setSelectedTransaction(null)}
-          onSave={handleSaveTransaction}
-          refreshData={refreshData}
-        />
-      )}
+      {showAddModal && <AddTransactionModal categories={categories} onClose={() => setShowAddModal(false)} onSave={handleCreateTransaction} refreshData={refreshData} />}
+      {selectedTransaction && <EditTransactionModal transaction={selectedTransaction} categories={categories} onClose={() => setSelectedTransaction(null)} onSave={handleSaveTransaction} refreshData={refreshData} />}
     </div>
   );
 };
