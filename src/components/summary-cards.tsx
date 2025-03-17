@@ -1,4 +1,4 @@
-import Card from "./ui/card";
+import Card from "./ui/sum-card";
 import { translations } from "@/utils/translations";
 import { useSettings } from "@/app/context/SettingContext";
 

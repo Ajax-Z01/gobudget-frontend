@@ -62,7 +62,7 @@ export default function BudgetsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
+      const response = await fetch("http://localhost:8080/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -72,11 +72,9 @@ export default function BudgetsPage() {
       }
 
       Cookies.remove("token");
-      setUser(undefined);
       router.replace("/login");
     } catch (err) {
       console.error("❌ Logout failed:", err);
-      setError(t.logout_failed);
     }
   };
 

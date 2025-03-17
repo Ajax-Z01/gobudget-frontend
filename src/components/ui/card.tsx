@@ -1,55 +1,92 @@
-import React, { JSX, useEffect, useState } from "react";
-import Link from "next/link";
-import { getExchangeRates } from "@/services/exchangeRates";
-import { useSettings } from "@/app/context/SettingContext";
-import { translations } from "@/utils/translations";
+import * as React from "react"
 
-const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.Element }> = ({ title, value, color, icon }) => {
-  const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
-  const { currency, language } = useSettings();
-  const t = translations[language === "English" ? "en" : "id"];
+import { cn } from "@/lib/utils"
 
-  useEffect(() => {
-    const fetchRates = async () => {
-      const rates = await getExchangeRates("USD");
-      if (rates) setExchangeRates(rates);
-    };
-    fetchRates();
-  }, []);
-
-  const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string) => {
-    if (!exchangeRates[fromCurrency] || !exchangeRates[toCurrency]) return amount;
-    return (amount / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
-  };
-
-  const convertedValue = convertCurrency(Number(value), "USD", currency);
-
+function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className="card overflow-hidden shadow-lg rounded-lg">
-      <div className="p-5 flex items-center">
-        <div className="flex-shrink-0 rounded-md p-3" style={{ backgroundColor: `var(--${color})` }}>
-          <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {icon}
-          </svg>
-        </div>
-        <div className="ml-5 flex-1">
-          <dl>
-            <dt className="text-sm font-medium truncate card-title">{title}</dt>
-            <dd className="text-lg font-medium" style={{ color: "var(--card-text)" }}>
-              {new Intl.NumberFormat(language === "Bahasa" ? "id-ID" : "en-US", { style: "currency", currency }).format(convertedValue)}
-            </dd>
-          </dl>
-        </div>
-      </div>
-      <div className="px-5 py-3" style={{ backgroundColor: "var(--border-color)" }}>
-        <div className="text-sm">
-          <Link href="/reports" className="font-medium hover:underline" style={{ color: "var(--card-text)" }}>
-            {t.view_all}
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-};
+    <div
+      data-slot="card"
+      className={cn(
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
 
-export default Card;
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
+      {...props}
+    />
+  )
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-6", className)}
+      {...props}
+    />
+  )
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
+      {...props}
+    />
+  )
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+}

@@ -33,9 +33,22 @@ export default function SettingsPage() {
     localStorage.setItem("language", newLanguage);
   };
 
-  const handleLogout = () => {
-    Cookies.remove("token");
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      Cookies.remove("token");
+      router.replace("/login");
+    } catch (err) {
+      console.error("❌ Logout failed:", err);
+    }
   };
 
   return (

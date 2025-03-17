@@ -77,7 +77,7 @@ export default function ReportsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
+      const response = await fetch("http://localhost:8080/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -87,11 +87,9 @@ export default function ReportsPage() {
       }
 
       Cookies.remove("token");
-      setUser(undefined);
-      router.push("/login");
+      router.replace("/login");
     } catch (err) {
       console.error("❌ Logout failed:", err);
-      setError("Logout failed. Please try again.");
     }
   };
 

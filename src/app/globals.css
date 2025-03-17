@@ -30,6 +30,9 @@
   --text-white: #EDEFEF;
   --text-black: #171717;
   --button-text: #0A0A0A;
+  --bg-invert: #171717;
+  --bg-error: #FEE2E2;
+  --input-bg: #FFFFFF;
 }
 
 /* Dark Mode */
@@ -51,6 +54,9 @@
   --logo-color: #EDEFEF;
   --title-color: #EDEFEF;
   --text-secondary: #9CA3AF;
+  --bg-invert: #EDEFEF;
+  --bg-error: #7F1D1D;
+  --input-bg: #2D2D2D;
 }
 
 /* ========================================= */

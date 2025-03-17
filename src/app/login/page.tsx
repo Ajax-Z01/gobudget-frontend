@@ -30,7 +30,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[var(--bg-color)] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link href="/" className="flex justify-center mb-5">
           <Image 
@@ -39,28 +39,28 @@ const LoginPage = () => {
             width={60} 
             height={60}
             style={{ width: "auto", height: "60px" }}
-            className="mx-auto invert"
+            className="mx-auto logo-sidebar"
           />
         </Link>
-        <h2 className="mt-3 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+        <h2 className="mt-3 text-center text-3xl font-extrabold title-name">
           Welcome back
         </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-center text-sm text-[var(--foreground)]">
           Sign in to your account to continue
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-[var(--card-bg)] py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {error && (
-            <div className="mb-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900 text-red-800 dark:text-red-300 rounded-md p-3 text-sm">
+            <div className="mb-4 text-[var(--tertiary)] border border-[var(--tertiary)] bg-[var(--bg-error)] rounded-md p-3 text-sm">
               {error}
             </div>
           )}
           
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="block text-sm font-medium title-name">
                 Email address
               </label>
               <div className="mt-1">
@@ -72,14 +72,14 @@ const LoginPage = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-[var(--border-color)] rounded-md shadow-sm placeholder-[var(--foreground)] focus:outline-none focus:ring-[var(--primary)] focus:border-[var(--primary)] bg-[var(--input-bg)] text-sm"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="block text-sm font-medium title-name">
                 Password
               </label>
               <div className="mt-1">
@@ -91,7 +91,7 @@ const LoginPage = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-[var(--border-color)] rounded-md shadow-sm placeholder-[var(--foreground)] focus:outline-none focus:ring-[var(--primary)] focus:border-[var(--primary)] bg-[var(--input-bg)] text-sm"
                   placeholder="••••••••"
                 />
               </div>
@@ -103,15 +103,15 @@ const LoginPage = () => {
                   id="remember_me"
                   name="remember_me"
                   type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded"
+                  className="h-4 w-4 text-[var(--secondary-hover)] focus:ring-[var(--secondary)] border-[var(--border-color)] bg-[var(--input-bg)] rounded"
                 />
-                <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                <label htmlFor="remember_me" className="ml-2 block text-sm text-[var(--foreground)]">
                   Remember me
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                <a href="#" className="font-semibold text-[var(--secondary)] hover:text-[var(--secondary-hover)]">
                   Forgot your password?
                 </a>
               </div>
@@ -121,20 +121,20 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center py-2 px-4 border border-[var(--border-color)] rounded-md shadow-sm text-sm font-medium text-[var(--text-white)] bg-[var(--secondary)] hover:bg-[var(--secondary-hover)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--secondary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>
 
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                <div className="w-full border-t border-[var(--border-color)]"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                <span className="px-2 bg-[var(--background)] text-[var(--foreground)]">
                   Or continue with
                 </span>
               </div>
@@ -166,12 +166,12 @@ const LoginPage = () => {
                 </a>
               </div>
             </div>
-          </div>
+          </div> */}
           
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-[var(--foreground)]">
               Don't have an account?{' '}
-              <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+              <Link href="/register" className="font-medium text-[var(--secondary)] hover:text-[var(--secondary-hover)]">
                 Sign up
               </Link>
             </p>
