@@ -126,7 +126,7 @@ export const translations = {
 
     // Lainnya
     home: "Beranda",
-    dashboard: "Dasbor",
+    dashboard: "Dashboard",
     view_all: "Lihat Semua",
     transactions: "Transaksi",
     back: "Kembali",

@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GoBudget Frontend
 
-## Getting Started
+GoBudget is a personal finance management application designed to help users track expenses, set budgets, and gain financial insights. This repository contains the frontend of GoBudget, built with **Next.js (App Router)** and styled with **Tailwind CSS**.
 
-First, run the development server:
+## 🚀 Features
+- **Expense Tracking**: Log and categorize your expenses easily.
+- **Budgeting Tools**: Set budgets for different categories and track progress.
+- **Reports & Insights**: Visualize spending trends with charts.
+- **Dark/Light Mode**: Toggle between themes.
+- **Data Export**: Download financial data for external analysis.
+- **Authentication**: (Planned, using JWT/Auth provider)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🛠️ Tech Stack
+- **Frontend**: Next.js (App Router), React, Tailwind CSS
+- **State Management**: React Hooks
+- **Charts & Graphs**: Recharts
+- **Backend API**: GoBudget Backend (built with Golang & PostgreSQL)
+
+## 📂 Project Structure
+```
+/gobudget-frontend
+│── app/          # Next.js App Router structure
+│── components/   # Reusable UI components
+│── lib/          # Utility functions & API calls
+│── utils/        # Helper functions
+│── types/        # Type definitions
+│── services/     # API service handlers
+│── middleware.ts # Middleware logic
+│── package.json  # Dependencies & scripts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚡ Getting Started
+### 1️⃣ Clone the Repository
+```sh
+git clone https://github.com/Ajax-Z01/gobudget-frontend.git
+cd gobudget-frontend
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2️⃣ Install Dependencies
+```sh
+yarn install  # or npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3️⃣ Run the Development Server
+```sh
+yarn dev  # or npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## 🤝 Contribution
+We welcome contributions! Feel free to fork this repository and submit a pull request with your improvements.
 
-To learn more about Next.js, take a look at the following resources:
+## 📜 License
+This project is licensed under the MIT License.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
+🔗 **GoBudget Backend Repository**: [GoBudget-Backend](https://github.com/Ajax-Z01/gobudget-backend)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
