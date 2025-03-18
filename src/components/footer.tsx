@@ -6,16 +6,18 @@ export default function Footer() {
     <footer className="py-8 border-t border-gray-200 dark:border-gray-700 mt-12">
       <div className="flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center gap-2 mb-4 sm:mb-0">
-          <Image
-            src="/gobudget-logo.svg"
-            alt="GoBudget Logo"
-            width={30}
-            height={30}
-            style={{ width: "auto", height: "40px" }}
-            className="logo-sidebar"
-          />
+          <Link href="/">
+            <Image
+              src="/gobudget-logo.svg"
+              alt="GoBudget Logo"
+              width={30}
+              height={30}
+              style={{ width: "auto", height: "40px" }}
+              className="logo-homepage"
+            />
+          </Link>
           <span className="text-sm font-medium text-[var(--foreground)]">
-            © 2025 GoBudget. All rights reserved.
+            © 2025 <Link href="/" className="text-[var(--primary)] hover:text-[var(--primary-hover)]">GoBudget</Link>. All rights reserved.
           </span>
         </div>
         

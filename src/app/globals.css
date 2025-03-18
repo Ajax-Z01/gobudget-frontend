@@ -22,6 +22,7 @@
   --primary-hover: #27AE60;
   --secondary-hover: #3A7CC2;
   --tertiary-hover: #E05858;
+  --gray: #575757;
   
   --icon-color: #171717;
   --logo-color: #171717;
@@ -42,7 +43,7 @@
   --card-bg: #181818;
   --card-text: #A3E4DB;
   --border-color: #525252;
-
+  
   /* Custom Theme Colors */
   --primary: #2ECC71;
   --secondary: #4A90E2; 
@@ -50,6 +51,8 @@
   --primary-hover: #27AE60;
   --secondary-hover: #3A7CC2;
   --tertiary-hover: #E05858;
+  --gray: #8AC4B7;
+  
   --icon-color: #2ECC71;
   --logo-color: #EDEFEF;
   --title-color: #EDEFEF;
@@ -84,6 +87,10 @@ html.dark body {
   transition: all 0.15s ease-in-out;
 }
 
+.logo-homepage {
+  filter: invert(0.53) sepia(1) saturate(3.1) hue-rotate(90deg);
+}
+
 .dark .logo-sidebar {
   filter: invert(0.53) sepia(1) saturate(3.1) hue-rotate(90deg);
 }
@@ -94,7 +101,7 @@ html.dark body {
 
 /* Title Styling */
 .title-name {
-  color: var(--foreground);
+  color: var(--primary);
   font-weight: bold;
 }
 

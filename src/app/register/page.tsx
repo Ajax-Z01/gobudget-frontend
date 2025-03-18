@@ -47,7 +47,7 @@ const RegisterPage = () => {
             width={60} 
             height={60}
             style={{ width: "auto", height: "60px" }}
-            className="mx-auto logo-sidebar"
+            className="mx-auto logo-homepage"
           />
         </Link>
         <h2 className="mt-3 text-center text-3xl font-extrabold title-name">
@@ -222,6 +222,17 @@ const RegisterPage = () => {
               </Link>
             </p>
           </div>
+        </div>
+        <div className="text-center mt-6 text-sm text-[var(--foreground)]">
+          By creating an account, you agree to the{" "}
+          <Link href="/terms" className="underline text-[var(--primary)]">
+            Terms of Service
+          </Link>
+          . For more information about GoBudget's privacy practices, see the{" "}
+          <Link href="/privacy" className="underline text-[var(--primary)]">
+            Privacy Policy
+          </Link>
+          . We'll occasionally send you account-related emails.
         </div>
       </div>
     </div>

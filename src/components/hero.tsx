@@ -14,7 +14,7 @@ export default function Hero() {
         <Link href="/register" className="bg-[var(--secondary)] hover:bg-[var(--secondary-hover)] text-[var(--text-white)] font-medium rounded-full px-6 py-3 transition-colors">
           Create Free Account
         </Link>
-        <Link href="/features" className="bg-transparent border border-[var(--logo-color)] hover:bg-[var(--bg-invert)] text-[var(--primary)] font-semibold rounded-full px-6 py-3 transition-colors">
+        <Link href="/features" className="bg-transparent border border-[var(--logo-color)] hover:bg-[var(--bg-invert)] text-[var(--primary)] hover:text-[var(--primary-hover)] font-semibold rounded-full px-6 py-3 transition-colors">
           Learn More
         </Link>
       </div>
