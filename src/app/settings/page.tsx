@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useSettings } from "@/app/context/SettingContext";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
@@ -19,7 +19,7 @@ export default function SettingsPage() {
 
     if (savedCurrency) setCurrency(savedCurrency);
     if (savedLanguage) setLanguage(savedLanguage);
-  }, []);
+  }, [setCurrency, setLanguage]);
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCurrency = e.target.value;

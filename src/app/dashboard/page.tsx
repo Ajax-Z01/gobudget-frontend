@@ -1,9 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
 import { getUser } from "@/services/auth";
-import { getCategories } from "@/services/categories";
-import { getTransactions, getSummary } from "@/services/transactions";
+import { getSummary } from "@/services/transactions";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useSettings } from "@/app/context/SettingContext";
@@ -14,16 +12,24 @@ import RecentActivity from "@/components/recent-activity";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 
+interface User {
+  email: string;
+  name: string;
+}
+
+interface Summary {
+  total_income: number;
+  total_expense: number;
+  balance: number;
+}
+
 const DashboardPage = () => {
   const router = useRouter();
-  const { theme } = useTheme();
   const { language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
 
-  const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [summary, setSummary] = useState({ total_income: 0, total_expense: 0, balance: 0 });
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [summary, setSummary] = useState<Summary>({ total_income: 0, total_expense: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,22 +38,15 @@ const DashboardPage = () => {
 
     const fetchData = async () => {
       try {
-        const [userData, transactionsData, categoriesData, summaryData] = await Promise.all([
-          getUser(),
-          getTransactions(),
-          getCategories(),
-          getSummary(),
-        ]);
+        const [userData, summaryData] = await Promise.all([getUser(), getSummary()]);
 
         if (isMounted) {
           setUser(userData);
-          setTransactions(transactionsData.slice(-5).reverse());
-          setCategories(categoriesData);
           setSummary(summaryData);
         }
-      } catch (err: any) {
-        console.error("❌ Error fetching data:", err.message || err);
-        setError(`Failed to fetch data: ${err.message || "Unknown error"}`);
+      } catch (err: unknown) {
+        console.error("❌ Error fetching data:", err instanceof Error ? err.message : "Unknown error");
+        setError("Failed to fetch data");
         router.push("/login");
       } finally {
         if (isMounted) setLoading(false);
@@ -82,6 +81,14 @@ const DashboardPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">{error}</div>
       </div>
     );
   }

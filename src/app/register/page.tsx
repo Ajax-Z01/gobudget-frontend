@@ -20,22 +20,34 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
+  
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
       setLoading(false);
       return;
     }
-
+  
     try {
       await register(name, email, password);
       router.push("/login");
-    } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+  
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-color)] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -228,11 +240,11 @@ const RegisterPage = () => {
           <Link href="/terms" className="underline text-[var(--primary)]">
             Terms of Service
           </Link>
-          . For more information about GoBudget's privacy practices, see the{" "}
+          . For more information about GoBudget&apos;s privacy practices, see the{" "}
           <Link href="/privacy" className="underline text-[var(--primary)]">
             Privacy Policy
           </Link>
-          . We'll occasionally send you account-related emails.
+          . We&apos;ll occasionally send you account-related emails.
         </div>
       </div>
     </div>

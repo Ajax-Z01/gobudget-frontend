@@ -36,14 +36,19 @@ export default function BudgetsPage() {
       try {
         const userData = await getUser();
         if (isMounted) setUser(userData);
-
+    
         const fetchedBudgets = await getBudgets();
         if (isMounted) setBudgets(fetchedBudgets);
-        
+    
         const fetchedCategories = await getCategories();
         if (isMounted) setCategories(fetchedCategories);
-      } catch (err: any) {
-        console.error("❌ Error fetching data:", err.message || err);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error("❌ Error fetching data:", err.message);
+        } else {
+          console.error("❌ Error fetching data:", err);
+        }
+    
         if (isMounted) {
           setError(t.fetch_error);
           setTimeout(() => router.replace("/login"), 2000);
@@ -51,7 +56,7 @@ export default function BudgetsPage() {
       } finally {
         if (isMounted) setLoading(false);
       }
-    };
+    };    
 
     fetchData();
 

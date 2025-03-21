@@ -18,7 +18,7 @@ export default function AboutPage() {
         </p>
         <p className="text-lg text-muted-foreground max-w-2xl">
           With GoBudget, you can categorize expenses, set budgets, view financial
-          reports, and analyze spending trends. Whether you're saving for a big goal
+          reports, and analyze spending trends. Whether you&apos;re saving for a big goal
           or just want to manage your daily expenses, GoBudget has got you covered.
         </p>
         <p className="text-lg text-muted-foreground max-w-2xl">

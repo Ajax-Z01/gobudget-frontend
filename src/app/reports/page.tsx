@@ -52,8 +52,8 @@ export default function ReportsPage() {
         if (rates && rates[currency]) {
           setExchangeRate(rates[currency]);
         }
-      } catch (err: any) {
-        console.error("❌ Error fetching data:", err.message || err);
+      } catch (err: unknown) {
+        console.error("❌ Error fetching data:", err instanceof Error ? err.message : String(err));
         setError("Failed to fetch data. Redirecting to login...");
         router.replace("/login");
       } finally {

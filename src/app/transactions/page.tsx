@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Switch from "@/components/ui/theme-switcher";
@@ -20,42 +19,38 @@ import { getTranslatedCategory } from "@/utils/categoryTranslations";
 
 const TransactionsPage = () => {
   const router = useRouter();
-  const { theme } = useTheme();
   const { language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
 
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState<any | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData = await getUser();
         setUser(userData);
-      } catch (err: any) {
-        console.error("❌ Error fetching user:", err.message || err);
-        setError(`${t.error_fetching_user}`);
+      } catch (err: unknown) {
+        console.error("❌ Error fetching user:", err);
+        setError(t.error_fetching_user);
         router.replace("/login");
-      } finally {
-        setLoading(false);
       }
     };
-
+  
     fetchUser();
-  }, [router]);
+  }, [router, t.error_fetching_user]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [transactionsData, categoriesData] = await Promise.all([
         getTransactions(),
         getCategories(),
       ]);
-      
+  
       const translatedTransactions = transactionsData.map((tx: Transaction) => ({
         ...tx,
         category: {
@@ -63,23 +58,23 @@ const TransactionsPage = () => {
           name: getTranslatedCategory(tx.category?.name || "Unknown", language),
         },
       }));
-
+  
       const translatedCategories = categoriesData.map((cat: Category) => ({
         ...cat,
         name: getTranslatedCategory(cat.name, language),
       }));
-
+  
       setTransactions(translatedTransactions);
       setCategories(translatedCategories);
     } catch (err) {
       console.error("❌ Error fetching data:", err);
-      setError(`${t.error_loading_data}`);
+      setError(t.error_loading_data);
     }
-  };
-
+  }, [language, t.error_loading_data]);
+  
   useEffect(() => {
     fetchData();
-  }, [language]);
+  }, [fetchData]);
 
   const handleLogout = async () => {
     try {
@@ -99,7 +94,7 @@ const TransactionsPage = () => {
     }
   };
 
-  const handleCreateTransaction = async (newTransaction: any) => {
+  const handleCreateTransaction = async (newTransaction: Transaction) => {
     if (!newTransaction.note || Number(newTransaction.amount) <= 0) {
       alert(`${t.enter_valid_transaction}`);
       return;
@@ -130,7 +125,7 @@ const TransactionsPage = () => {
     setSelectedTransaction(transaction);
   };
   
-  const handleSaveTransaction = async (updatedTransaction: any) => {
+  const handleSaveTransaction = async (updatedTransaction: Transaction) => {
     console.log(`${t.updating_transaction}:`, updatedTransaction);
 
     try {

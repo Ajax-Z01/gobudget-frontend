@@ -1,7 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://gobudget-backend-production.up.railway.app";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -16,23 +16,38 @@ const getAuthHeaders = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-export const getCategories = async () => {
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface NewCategory {
+  name: string;
+}
+
+export const getCategories = async (): Promise<Category[]> => {
   try {
     const response = await api.get("/categories", { headers: getAuthHeaders() });
     console.log("🔍 Fetched categories:", response.data);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("❌ Error fetching categories:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to fetch categories");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
 
-export const createCategory = async (categoryData: any) => {
+export const createCategory = async (categoryData: NewCategory): Promise<Category> => {
   try {
     const response = await api.post("/categories", categoryData, { headers: getAuthHeaders() });
     return response.data;
-  } catch (error) {
-    console.error("Error creating category:", error);
-    throw error;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("❌ Error creating category:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to create category");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };

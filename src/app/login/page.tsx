@@ -17,16 +17,28 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
+  
     try {
       await login(email, password);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
+  
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg-color)] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -129,7 +141,7 @@ const LoginPage = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-[var(--foreground)]">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/register" className="font-medium text-[var(--secondary)] hover:text-[var(--secondary-hover)]">
                 Sign up
               </Link>

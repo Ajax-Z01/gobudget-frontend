@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://gobudget-backend-production.up.railway.app";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -14,9 +14,12 @@ export const register = async (name: string, email: string, password: string) =>
   try {
     const response = await api.post("/register", { name, email, password });
     return response.data;
-  } catch (error: any) {
-    console.error("Registration error:", error.response?.data);
-    throw new Error(error.response?.data?.error || "Registration failed");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Registration error:", error.response?.data);
+      throw new Error(error.response?.data?.error || "Registration failed");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
 
@@ -24,9 +27,12 @@ export const login = async (email: string, password: string) => {
   try {
     const response = await api.post("/login", { email, password });
     return response.data;
-  } catch (error: any) {
-    console.error("Login error:", error.response?.data);
-    throw new Error(error.response?.data?.message || "Login failed");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Login error:", error.response?.data);
+      throw new Error(error.response?.data?.message || "Login failed");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
 
@@ -35,17 +41,23 @@ export const getUser = async () => {
     const response = await api.get("/user");
     console.log("Fetched user:", response.data);
     return response.data;
-  } catch (error: any) {
-    console.error("Get user error:", error.response?.data);
-    throw new Error(error.response?.data?.message || "Failed to fetch user data");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Get user error:", error.response?.data);
+      throw new Error(error.response?.data?.message || "Failed to fetch user data");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
 
 export const logout = async () => {
   try {
     await api.post("/logout");
-  } catch (error: any) {
-    console.error("Logout error:", error.response?.data);
-    throw new Error(error.response?.data?.message || "Logout failed");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error("Logout error:", error.response?.data);
+      throw new Error(error.response?.data?.message || "Logout failed");
+    }
+    throw new Error("An unexpected error occurred");
   }
 };
