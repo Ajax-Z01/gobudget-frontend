@@ -1,6 +1,7 @@
 "use client";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSettings } from "@/app/context/SettingContext";
+import { getUser } from "@/services/auth";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 import Switch from "@/components/ui/theme-switcher";
@@ -12,6 +13,9 @@ export default function SettingsPage() {
   const router = useRouter();
   const { currency, setCurrency, language, setLanguage } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
+  
 
   useEffect(() => {
     const savedCurrency = localStorage.getItem("currency");
@@ -19,7 +23,20 @@ export default function SettingsPage() {
 
     if (savedCurrency) setCurrency(savedCurrency);
     if (savedLanguage) setLanguage(savedLanguage);
-  }, [setCurrency, setLanguage]);
+    
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (err: unknown) {
+        console.error("❌ Error fetching data:", err instanceof Error ? err.message : String(err));
+        setError("Failed to fetch data. Redirecting to login...");
+        router.replace("/login");
+      }
+    };
+
+    fetchUser();
+  }, [router, setCurrency, setLanguage]);
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCurrency = e.target.value;
@@ -50,11 +67,15 @@ export default function SettingsPage() {
       console.error("❌ Logout failed:", err);
     }
   };
+  
+  if (error) {
+    return <div className="text-center mt-10 text-error">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Sidebar handleLogout={handleLogout} />
-      <MobileMenu handleLogout={handleLogout} />
+      <Sidebar user={user} handleLogout={handleLogout} />
+      <MobileMenu user={user} handleLogout={handleLogout} />
 
       <div className="md:pl-64 flex flex-col flex-1">
         <main className="flex-1">

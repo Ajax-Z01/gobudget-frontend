@@ -7,8 +7,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('user1@example.com');
+  const [password, setPassword] = useState('123123');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
