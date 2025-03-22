@@ -76,7 +76,7 @@ export default function BudgetsPage() {
         throw new Error("Logout failed");
       }
 
-      Cookies.remove("token");
+      Cookies.remove("token", { domain: ".gobudget.my.id" });
       router.replace("/login");
     } catch (err) {
       console.error("❌ Logout failed:", err);
