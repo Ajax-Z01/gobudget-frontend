@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:8080/logout", {
+      const response = await fetch("https://api.gobudget.my.id/logout", {
         method: "POST",
         credentials: "include",
       });

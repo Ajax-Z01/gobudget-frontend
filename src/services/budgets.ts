@@ -28,7 +28,6 @@ api.interceptors.response.use(
 export const getBudgets = async (): Promise<Budget[]> => {
   try {
     const response = await api.get("/budgets");
-    console.log("✅ API Response:", response.data);
     return response.data.map((budget: Budget) => ({
       ...budget,
       spent: budget.spent || 0,

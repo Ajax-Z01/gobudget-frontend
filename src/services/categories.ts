@@ -28,7 +28,6 @@ interface NewCategory {
 export const getCategories = async (): Promise<Category[]> => {
   try {
     const response = await api.get("/categories", { headers: getAuthHeaders() });
-    console.log("🔍 Fetched categories:", response.data);
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

@@ -38,7 +38,6 @@ const handleApiError = (error: unknown): never => {
 export const getTransactions = async (params: TransactionParams = {}): Promise<Transaction[]> => {
   try {
     const response = await api.get("/transactions", { params });
-    console.log("🔍 Fetched transactions:", response.data);
     return response.data;
   } catch (error: unknown) {
     return Promise.reject(handleApiError(error));
@@ -49,7 +48,6 @@ export const createTransaction = async (
   transactionData: Omit<Transaction, "id" | "created_at" | "updated_at">
 ): Promise<Transaction> => {
   try {
-    console.log("🔍 Creating transaction with data:", transactionData);
     const response = await api.post("/transactions", transactionData);
     return response.data;
   } catch (error: unknown) {
@@ -59,7 +57,6 @@ export const createTransaction = async (
 
 export const getTransactionById = async (id: number): Promise<Transaction> => {
   try {
-    console.log("🔍 Fetching transaction with ID:", id);
     const response = await api.get(`/transactions/${id}`);
     return response.data;
   } catch (error: unknown) {
@@ -72,7 +69,6 @@ export const updateTransaction = async (
   updatedData: Partial<Omit<Transaction, "id" | "created_at" | "updated_at">>
 ): Promise<Transaction> => {
   try {
-    console.log("🔍 Updating transaction:", { id, updatedData });
     const response = await api.put(`/transactions/${id}`, updatedData);
     return response.data;
   } catch (error: unknown) {
@@ -82,7 +78,6 @@ export const updateTransaction = async (
 
 export const deleteTransaction = async (id: number): Promise<{ message: string }> => {
   try {
-    console.log("🔍 Soft deleting transaction with ID:", id);
     const response = await api.put(`/transactions/delete/${id}`);
     return response.data;
   } catch (error: unknown) {
@@ -92,7 +87,6 @@ export const deleteTransaction = async (id: number): Promise<{ message: string }
 
 export const restoreTransaction = async (id: number): Promise<{ message: string }> => {
   try {
-    console.log("🔍 Restoring transaction with ID:", id);
     const response = await api.put(`/transactions/restore/${id}`);
     return response.data;
   } catch (error: unknown) {
@@ -108,7 +102,6 @@ export const getSummary = async (): Promise<{
 }> => {
   try {
     const response = await api.get("/summary");
-    console.log("🔍 Fetching summary", response.data);
     return response.data;
   } catch (error: unknown) {
     return Promise.reject(handleApiError(error));
