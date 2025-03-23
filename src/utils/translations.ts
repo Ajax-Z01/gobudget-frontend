@@ -57,6 +57,7 @@ export const translations = {
     cancel: "Cancel",
     converted_to_usd: "Converted to USD",
     loading_exchange_rate: "Fetching exchange rate",
+    exchange_rate: "Exchange Rate",
 
     // Errors & Messages
     error_fetching_user: "Failed to fetch user. Redirecting to login...",
@@ -139,6 +140,7 @@ export const translations = {
     cancel: "Batal",
     converted_to_usd: "Dikonversi ke USD",
     loading_exchange_rate: "Mengambil nilai tukar",
+    exchange_rate: "Nilai Tukar",
 
     // Error & Pesan
     error_fetching_user: "Gagal mengambil data pengguna. Mengalihkan ke login...",

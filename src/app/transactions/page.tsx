@@ -31,7 +31,6 @@ const TransactionsPage = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   
   useEffect(() => {
-    let isMounted = true;
     const fetchUser = async () => {
       try {
         const userData = await getUser();
@@ -186,7 +185,7 @@ const TransactionsPage = () => {
             </div>
 
             <div className="mt-8 p-2">
-              <Button onClick={() => setShowAddModal(true)}>{t.add_expense}</Button>
+              <Button onClick={() => setShowAddModal(true)}>{t.add_transaction}</Button>
             </div>
 
             {error ? (
