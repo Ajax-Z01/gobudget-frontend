@@ -3,6 +3,7 @@ import { useTheme } from "next-themes";
 import { Category, Transaction } from "@/types/type";
 import { useSettings } from "@/app/context/SettingContext";
 import { translations } from "@/utils/translations";
+import { getExchangeRates } from "@/services/exchangeRates";
 
 interface AddTransactionModalProps {
   onClose: () => void;
@@ -13,8 +14,12 @@ interface AddTransactionModalProps {
 
 const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSave, categories }) => {
   const { theme } = useTheme();
-  const { language } = useSettings();
+  const { language, currency } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
+
+  const [amountInput, setAmountInput] = useState<string>("");
+  const [exchangeRate, setExchangeRate] = useState<number>(1);
+  const [loadingRate, setLoadingRate] = useState<boolean>(false);
 
   const [newTransaction, setNewTransaction] = useState<Transaction>({
     id: 0,
@@ -22,12 +27,44 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
     amount: 0,
     type: "Income",
     category_id: categories.length > 0 ? categories[0].id : 0,
-    category: { id: 0, name: "" },
+    category: categories.length > 0 ? categories[0] : { id: 0, name: "" },
     user_id: 0,
-    created_at: "",
-    updated_at: "",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     deleted_at: null,
   });
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      if (currency === "USD") {
+        console.log("Currency is USD, no conversion needed.");
+        setExchangeRate(1);
+        return;
+      }
+  
+      setLoadingRate(true);
+      try {
+        const rates = await getExchangeRates("USD");
+        console.log("Fetched exchange rates:", rates);
+  
+        const usdToIdrRate = rates["IDR"]; 
+  
+        if (usdToIdrRate && usdToIdrRate > 0) {
+          console.log(`1 USD = ${usdToIdrRate} ${currency}`);
+          setExchangeRate(usdToIdrRate);
+        } else {
+          console.warn("Invalid exchange rate from API, using default 1.");
+          setExchangeRate(1);
+        }
+      } catch (error) {
+        console.error("Failed to fetch exchange rates", error);
+        setExchangeRate(1);
+      }
+      setLoadingRate(false);
+    };
+  
+    fetchRates();
+  }, [currency]);   
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,11 +76,26 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setNewTransaction((prev) => ({
-      ...prev,
-      [name]: name === "amount" ? parseFloat(value) || 0 : value,
-    }));
-  };
+  
+    if (name === "amount") {
+      setAmountInput(value);
+      const parsedAmount = parseFloat(value);
+  
+      if (isNaN(parsedAmount)) {
+        console.warn("Invalid amount input:", value);
+        return;
+      }
+      
+      const amountInUSD = currency !== "USD" ? parsedAmount / exchangeRate : parsedAmount;
+  
+      setNewTransaction((prev) => ({ ...prev, amount: parseFloat(amountInUSD.toFixed(2)) }));
+    } else if (name === "category_id") {
+      const selectedCategory = categories.find((cat) => cat.id === parseInt(value, 10)) || { id: 0, name: "" };
+      setNewTransaction((prev) => ({ ...prev, category_id: selectedCategory.id, category: selectedCategory }));
+    } else {
+      setNewTransaction((prev) => ({ ...prev, [name]: value }));
+    }
+  };  
 
   const handleSave = () => {
     if (!newTransaction.note || newTransaction.amount <= 0) {
@@ -71,15 +123,28 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           className="modal-input"
           placeholder={t.transaction_note}
         />
-        <input
-          type="number"
-          name="amount"
-          value={newTransaction.amount}
-          onChange={handleChange}
-          onFocus={(e) => e.target.select()}
-          className="modal-input"
-          placeholder={t.transaction_amount}
-        />
+        <div className="relative flex items-center">
+          <div className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-l-md">
+            {currency}
+          </div>
+          <input
+            type="number"
+            name="amount"
+            value={amountInput}
+            onChange={handleChange}
+            onFocus={(e) => e.target.select()}
+            className="modal-input rounded-l-none"
+            placeholder={`${t.transaction_amount} (${currency})`}
+          />
+        </div>
+        {currency !== "USD" && !loadingRate && (
+          <p className="text-sm text-[var(--foreground)] mt-1">
+            {t.converted_to_usd}: ${newTransaction.amount.toFixed(2)}
+          </p>
+        )}
+        {loadingRate && currency !== "USD" && (
+          <p className="text-sm text-[var(--foreground)] mt-1">{t.loading_exchange_rate}...</p>
+        )}
         <select
           name="type"
           value={newTransaction.type}
@@ -95,7 +160,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
           onChange={handleChange}
           className="modal-input"
         >
-          <option value="">{t.select_category}</option>
+          <option value="0">{t.select_category}</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}

@@ -24,12 +24,14 @@ const TransactionsPage = () => {
 
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   
   useEffect(() => {
+    let isMounted = true;
     const fetchUser = async () => {
       try {
         const userData = await getUser();
@@ -69,6 +71,8 @@ const TransactionsPage = () => {
     } catch (err) {
       console.error("❌ Error fetching data:", err);
       setError(t.error_loading_data);
+    } finally {
+      setLoading(false);
     }
   }, [language, t.error_loading_data]);
   
@@ -159,6 +163,14 @@ const TransactionsPage = () => {
   const refreshData = async () => {
     await fetchData();
   };
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
