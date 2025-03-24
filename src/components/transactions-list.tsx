@@ -5,6 +5,7 @@ import { getExchangeRates } from "@/services/exchangeRates";
 import { useSettings } from "@/app/context/SettingContext";
 import { translations } from "@/utils/translations";
 
+
 type TransactionListProps = {
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
@@ -14,14 +15,13 @@ type TransactionListProps = {
 const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit, onDelete }) => {
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
   const { currency, language } = useSettings();
-  const currency_setings = currency;
   const t = translations[language === "English" ? "en" : "id"];
   const localeMap: Record<string, string> = {
     English: "en-US",
     Bahasa: "id-ID",
   };
   const currentLocale = localeMap[language] || "en-US";
-
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(currentLocale, {
       day: "numeric",
@@ -29,40 +29,22 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false,
+      hour12: false
     });
   };
 
   useEffect(() => {
     const fetchRates = async () => {
-      const uniqueCurrencies = Array.from(new Set(transactions.map(tx => tx.currency)));
-      const ratesData: { [key: string]: number } = {};
-  
-      for (const currency of uniqueCurrencies) {
-        const rates = await getExchangeRates(currency);
-        console.log(`Fetched exchange rate for ${currency}:`, rates[currency_setings]);
-  
-        if (rates) {
-          ratesData[currency] = rates[currency_setings];
-        }
-      }
-  
-      console.log("Final exchangeRates:", ratesData);
-      setExchangeRates(ratesData);
+      const rates = await getExchangeRates("USD");
+      if (rates) setExchangeRates(rates);
     };
-  
-    if (transactions.length > 0) {
-      fetchRates();
-    }
-  }, [transactions]);
+    fetchRates();
+  }, []);
 
-  const convertCurrency = (amount: number, transactionCurrency: string, transactionExchangeRate: number) => {
-    if (transactionCurrency === currency) return amount;
-    
-    const userCurrencyRate = exchangeRates[transactionCurrency] || 1;
-  
-    return amount * userCurrencyRate;
-  };  
+  const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string) => {
+    if (!exchangeRates[fromCurrency] || !exchangeRates[toCurrency]) return amount;
+    return (amount / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
+  };
 
   return (
     <div className="mt-4 p-2">
@@ -71,10 +53,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
         <ul className="divide-y divide-[var(--border-color)]">
           {transactions.length > 0 ? (
             transactions.map((transaction) => {
-              console.log(
-                `amount: ${transaction.amount}, trans_rate: ${transaction.exchange_rate}, target_rate: ${exchangeRates[currency]}`
-              );
-              const convertedAmount = convertCurrency(transaction.amount, transaction.currency, transaction.exchange_rate);
+              const convertedAmount = convertCurrency(transaction.amount, "USD", currency);
 
               return (
                 <li
@@ -106,7 +85,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
                       >
                         {new Intl.NumberFormat(language === "English" ? "en-US" : "id-ID", {
                           style: "currency",
-                          currency: currency,
+                          currency: currency
                         }).format(convertedAmount)}
                       </span>
                       <div className="flex gap-2 mt-2 md:mt-0">

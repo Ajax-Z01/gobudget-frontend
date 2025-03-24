@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTheme } from "next-themes";
 import { Category, Transaction } from "@/types/type";
 import { translations } from "@/utils/translations";
 import { useSettings } from "@/app/context/SettingContext";
-import { getExchangeRates } from "@/services/exchangeRates";
 
 interface EditTransactionModalProps {
   transaction: Transaction | null;
@@ -18,18 +17,13 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
   const { language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
 
-  const [exchangeRate, setExchangeRate] = useState<number>(1);
-  const [loadingRate, setLoadingRate] = useState<boolean>(false);
-
   const [editedTransaction, setEditedTransaction] = useState<Transaction>({
     id: transaction?.id || 0,
     note: transaction?.note || "",
     amount: transaction?.amount || 0,
-    currency: transaction?.currency || "IDR",
-    exchange_rate: transaction?.exchange_rate || 1,
     type: transaction?.type || "Income",
     category_id: transaction?.category_id || 0,
-    category: transaction?.category || { id: 0, name: "" },
+    category: { id: 0, name: "" },
     user_id: transaction?.user_id || 0,
     created_at: transaction?.created_at || "",
     updated_at: transaction?.updated_at || "",
@@ -38,64 +32,12 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
 
   if (!transaction) return null;
 
-  useEffect(() => {
-    const fetchRates = async () => {
-      if (!editedTransaction.currency) return;
-
-      if (editedTransaction.currency === "IDR") {
-        setExchangeRate(1);
-        setEditedTransaction((prev) => ({
-          ...prev,
-          exchange_rate: 1,
-        }));
-        return;
-      }
-
-      setLoadingRate(true);
-      try {
-        const rates = await getExchangeRates(editedTransaction.currency);
-        const rate = rates["IDR"] || 1;
-
-        setExchangeRate(rate);
-        setEditedTransaction((prev) => ({
-          ...prev,
-          exchange_rate: rate,
-        }));
-      } catch (error) {
-        console.error("Failed to fetch exchange rates", error);
-        setExchangeRate(1);
-        setEditedTransaction((prev) => ({
-          ...prev,
-          exchange_rate: 1,
-        }));
-      }
-      setLoadingRate(false);
-    };
-
-    fetchRates();
-  }, [editedTransaction.currency]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    if (name === "amount") {
-      setEditedTransaction((prev) => ({
-        ...prev,
-        amount: Number(value),
-      }));
-    } else if (name === "category_id") {
-      const selectedCategory = categories.find((cat) => cat.id === parseInt(value, 10)) || { id: 0, name: "" };
-      setEditedTransaction((prev) => ({
-        ...prev,
-        category_id: selectedCategory.id,
-        category: selectedCategory,
-      }));
-    } else {
-      setEditedTransaction((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setEditedTransaction((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? Number(value) : value,
+    }));
   };
 
   const handleSave = () => {
@@ -107,11 +49,6 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
       alert(t.select_valid_category);
       return;
     }
-    if (!editedTransaction.currency || editedTransaction.exchange_rate === 0) {
-      alert("Currency and exchange rate must be valid.");
-      return;
-    }
-
     onSave({ ...editedTransaction, note: editedTransaction.note ?? "" });
     onClose();
   };
@@ -128,22 +65,14 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
           className="modal-input"
           placeholder={t.transaction_note}
         />
-        <div className="relative flex items-center">
-          <div className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-l-md">
-            {editedTransaction.currency}
-          </div>
-          <input
-            type="number"
-            name="amount"
-            value={editedTransaction.amount}
-            onChange={handleChange}
-            className="modal-input rounded-l-none"
-            placeholder={`${t.transaction_amount} (${editedTransaction.currency})`}
-          />
-        </div>
-        {loadingRate && editedTransaction.currency !== "IDR" && (
-          <p className="text-sm text-[var(--foreground)] mt-1">{t.loading_exchange_rate}...</p>
-        )}
+        <input
+          type="number"
+          name="amount"
+          value={editedTransaction.amount}
+          onChange={handleChange}
+          className="modal-input"
+          placeholder={t.transaction_amount}
+        />
         <select name="type" value={editedTransaction.type} onChange={handleChange} className="modal-input">
           <option value="Income">{t.income}</option>
           <option value="Expense">{t.expense}</option>
@@ -157,7 +86,7 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
           ))}
         </select>
         <div className="button-wrapper flex justify-between mt-4">
-          <button onClick={handleSave} className="edit-button">{t.save}</button>
+          <button onClick={handleSave} className="edit-button">{t.edit}</button>
           <button onClick={onClose} className="cancel-button">{t.cancel}</button>
         </div>
       </div>

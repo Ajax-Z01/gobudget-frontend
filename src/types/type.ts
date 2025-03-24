@@ -4,8 +4,6 @@ export interface Transaction {
   id: number;
   type: TransactionType;
   amount: number;
-  currency: string;
-  exchange_rate: number;
   note?: string;
   category_id: number;
   category: {
