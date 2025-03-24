@@ -11,7 +11,7 @@ const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.El
 
   useEffect(() => {
     const fetchRates = async () => {
-      const rates = await getExchangeRates("USD");
+      const rates = await getExchangeRates("IDR");
       if (rates) setExchangeRates(rates);
     };
     fetchRates();
@@ -22,7 +22,7 @@ const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.El
     return (amount / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
   };
 
-  const convertedValue = convertCurrency(Number(value), "USD", currency);
+  const convertedValue = convertCurrency(Number(value), "IDR", currency);
 
   return (
     <div className="card overflow-hidden shadow-lg rounded-lg">

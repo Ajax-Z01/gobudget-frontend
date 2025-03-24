@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 import Switch from "@/components/ui/theme-switcher";
-import { getUser } from "@/services/auth";
+import { getUser, logout } from "@/services/auth";
 import { getSummary } from "@/services/transactions";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import Papa from "papaparse";
 import { Download } from "lucide-react";
@@ -77,17 +76,7 @@ export default function ReportsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://api.gobudget.my.id/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
-      Cookies.remove("token", { domain: ".gobudget.my.id" });
-      router.replace("/login");
+      await logout();
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }

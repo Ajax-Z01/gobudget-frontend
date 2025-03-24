@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -52,6 +53,8 @@ export const getUser = async () => {
 export const logout = async () => {
   try {
     await api.post("/logout");
+    Cookies.remove("token", { domain: ".gobudget.my.id" });
+    window.location.href = "/login";
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       console.error("Logout error:", error.response?.data);

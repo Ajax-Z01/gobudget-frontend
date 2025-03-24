@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSettings } from "@/app/context/SettingContext";
-import { getUser } from "@/services/auth";
+import { getUser, logout } from "@/services/auth";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 import Switch from "@/components/ui/theme-switcher";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { translations } from "@/utils/translations";
 
 export default function SettingsPage() {
@@ -52,17 +51,7 @@ export default function SettingsPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://api.gobudget.my.id/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
-      Cookies.remove("token", { domain: ".gobudget.my.id" });
-      router.replace("/login");
+      await logout();
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }
@@ -98,6 +87,7 @@ export default function SettingsPage() {
                   <option className="text-[var(--text-black)]" value="IDR">IDR - Indonesian Rupiah</option>
                   <option className="text-[var(--text-black)]" value="USD">USD - US Dollar</option>
                   <option className="text-[var(--text-black)]" value="EUR">EUR - Euro</option>
+                  <option className="text-[var(--text-black)]" value="JPY">JPY - Japanese Yen</option>
                 </select>
               </div>
 

@@ -1,54 +1,52 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 import Switch from "@/components/ui/theme-switcher";
 import BudgetList from "@/components/budget-list";
-import { getUser } from "@/services/auth";
-import { getBudgets, createBudget } from "@/services/budgets";
-import { getCategories } from "@/services/categories";
-import { Budget, NewBudget, Category } from "@/types/type";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { translations } from "@/utils/translations";
+import { getUser, logout } from "@/services/auth";
+import { getBudgets, createBudget } from "@/services/budgets";
+import { getCategories } from "@/services/categories";
+import { getExchangeRates } from "@/services/exchangeRates";
 import { useSettings } from "@/app/context/SettingContext";
 import { getTranslatedCategory } from "@/utils/categoryTranslations";
+import { translations } from "@/utils/translations";
+import { Budget, NewBudget, Category } from "@/types/type";
 
 export default function BudgetsPage() {
   const router = useRouter();
-  const { language } = useSettings();
+  const { language, currency: defaultCurrency } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
 
-  const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
+  const [user, setUser] = useState<{ email: string; name: string } | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [amount, setAmount] = useState<number | "">("");
+  const [currency, setCurrency] = useState<string>(defaultCurrency);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     let isMounted = true;
-
+    
     const fetchData = async () => {
       try {
         const userData = await getUser();
-        if (isMounted) setUser(userData);
-    
         const fetchedBudgets = await getBudgets();
-        if (isMounted) setBudgets(fetchedBudgets);
-    
         const fetchedCategories = await getCategories();
-        if (isMounted) setCategories(fetchedCategories);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          console.error("❌ Error fetching data:", err.message);
-        } else {
-          console.error("❌ Error fetching data:", err);
+
+        if (isMounted) {
+          setUser(userData);
+          setBudgets(fetchedBudgets);
+          setCategories(fetchedCategories);
         }
-    
+      } catch (err) {
+        console.error("❌ Error fetching data:", err);
         if (isMounted) {
           setError(t.fetch_error);
           setTimeout(() => router.replace("/login"), 2000);
@@ -56,42 +54,27 @@ export default function BudgetsPage() {
       } finally {
         if (isMounted) setLoading(false);
       }
-    };    
+    };
 
     fetchData();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [router, t]);
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://api.gobudget.my.id/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
-      Cookies.remove("token", { domain: ".gobudget.my.id" });
-      router.replace("/login");
+      await logout();
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }
   };
 
   const handleCreateBudget = async () => {
-    if (!categoryId || !amount) return;
-
+    if (!categoryId || !amount || !currency) return;
+    
     try {
-      const newBudget: NewBudget = {
-        category_id: categoryId,
-        amount,
-      };
-
+      const rates = await getExchangeRates(currency);
+      const exchangeRate = rates["IDR"];
+      const newBudget: NewBudget = { category_id: categoryId, amount, currency, exchange_rate: exchangeRate };
       await createBudget(newBudget);
 
       const updatedBudgets = await getBudgets();
@@ -99,6 +82,8 @@ export default function BudgetsPage() {
 
       setCategoryId("");
       setAmount("");
+      
+      console.log("Created budget:", newBudget);
     } catch (error) {
       console.error("❌ Error creating budget:", error);
       setError(t.create_budget_error);
@@ -115,10 +100,7 @@ export default function BudgetsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] flex flex-col">
-      {/* Sidebar untuk Desktop */}
       <Sidebar user={user} handleLogout={handleLogout} />
-
-      {/* Mobile Menu */}
       <MobileMenu user={user} handleLogout={handleLogout} />
 
       <div className="md:pl-64 flex flex-1 flex-col">
@@ -128,7 +110,6 @@ export default function BudgetsPage() {
             <Switch />
           </div>
 
-          {/* Form Input Budget */}
           <div className="mt-8 mb-4 flex flex-col sm:flex-row gap-2 p-2">
             <select
               value={categoryId}
@@ -151,17 +132,22 @@ export default function BudgetsPage() {
               className="w-full sm:w-auto"
             />
 
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="w-full sm:w-auto px-4 py-2 border rounded-md text-[var(--card-text)] bg-[var(--background)]"
+            >
+              {["IDR", "USD", "EUR", "JPY"].map((curr) => (
+                <option key={curr} value={curr}>{curr}</option>
+              ))}
+            </select>
+
             <Button onClick={handleCreateBudget} className="w-full sm:w-auto">
               {t.add_budget}
             </Button>
           </div>
 
-          {/* Budget List */}
-          {error ? (
-            <p className="text-red-500 text-center">{error}</p>
-          ) : (
-            <BudgetList budgets={budgets} setBudgets={setBudgets} />
-          )}
+          {error ? <p className="text-red-500 text-center">{error}</p> : <BudgetList budgets={budgets} setBudgets={setBudgets} />}
         </main>
       </div>
     </div>

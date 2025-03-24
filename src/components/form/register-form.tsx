@@ -24,8 +24,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   handleSubmit,
   loading,
 }) => {
-  const router = useRouter(); // Router untuk navigasi
-
+  const router = useRouter();
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <form 
@@ -87,7 +86,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           <p className="text-gray-400">Already have an account?</p>
           <button
             type="button"
-            onClick={() => router.push('/login')} // Navigasi ke halaman login
+            onClick={() => router.push('/login')}
             className="mt-2 inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-all"
           >
             Sign In

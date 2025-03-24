@@ -25,7 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      type={type} // Gunakan properti type di sini
+      type={type}
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}
       onClick={onClick}
     >

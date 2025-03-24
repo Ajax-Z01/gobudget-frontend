@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getUser } from "@/services/auth";
+import { getUser, logout } from "@/services/auth";
 import { getSummary } from "@/services/transactions";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { useSettings } from "@/app/context/SettingContext";
 import { translations } from "@/utils/translations";
 import Switch from "@/components/ui/theme-switcher";
@@ -11,17 +10,7 @@ import SummaryCards from "@/components/summary-cards";
 import RecentActivity from "@/components/recent-activity";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
-
-interface User {
-  email: string;
-  name: string;
-}
-
-interface Summary {
-  total_income: number;
-  total_expense: number;
-  balance: number;
-}
+import { User, Summary } from "@/types/type";
 
 const DashboardPage = () => {
   const router = useRouter();
@@ -61,17 +50,7 @@ const DashboardPage = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://api.gobudget.my.id/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
-      Cookies.remove("token", { domain: ".gobudget.my.id" });
-      router.replace("/login");
+      await logout();
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }

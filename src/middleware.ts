@@ -9,12 +9,10 @@ export function middleware(req: NextRequest) {
   const isProtectedRoute = ["/dashboard", "/transactions", "/reports", "/budgets", "/settings"].some((route) => path.startsWith(route));
 
   if (isAuthRoute && token) {
-    console.log("✅ Sudah login, redirect ke /dashboard");
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   if (isProtectedRoute && !token) {
-    console.log("🔹 Tidak ada token, redirect ke /login");
     return NextResponse.redirect(new URL("/login", req.url));
   }
 

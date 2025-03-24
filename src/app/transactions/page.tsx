@@ -1,12 +1,11 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import Switch from "@/components/ui/theme-switcher";
 import Sidebar from "@/components/sidebar";
 import MobileMenu from "@/components/mobile-menu";
 import TransactionList from "@/components/transactions-list";
-import { getUser } from "@/services/auth";
+import { getUser, logout } from "@/services/auth";
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction } from "@/services/transactions";
 import { getCategories } from "@/services/categories";
 import { Button } from "@/components/ui/button";
@@ -81,17 +80,7 @@ const TransactionsPage = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://api.gobudget.my.id/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-
-      Cookies.remove("token", { domain: ".gobudget.my.id" });
-      router.replace("/login");
+      await logout();
     } catch (err) {
       console.error("❌ Logout failed:", err);
     }

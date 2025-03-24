@@ -40,14 +40,12 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
   
       for (const currency of uniqueCurrencies) {
         const rates = await getExchangeRates(currency);
-        console.log(`Fetched exchange rate for ${currency}:`, rates[currency_settings]);
   
         if (rates) {
           ratesData[currency] = rates[currency_settings];
         }
       }
   
-      console.log("Final exchangeRates:", ratesData);
       setExchangeRates(ratesData);
     };
   
@@ -71,9 +69,6 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
         <ul className="divide-y divide-[var(--border-color)]">
           {transactions.length > 0 ? (
             transactions.map((transaction) => {
-              console.log(
-                `amount: ${transaction.amount}, trans_rate: ${transaction.exchange_rate}, target_rate: ${exchangeRates[currency]}`
-              );
               const convertedAmount = convertCurrency(transaction.amount, transaction.currency);
 
               return (

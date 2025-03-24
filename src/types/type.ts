@@ -1,3 +1,8 @@
+export interface User {
+  email: string;
+  name: string;
+}
+
 export type TransactionType = "Income" | "Expense";
   
 export interface Transaction {
@@ -46,6 +51,8 @@ export interface Budget {
   };
   amount: number;
   spent: number;
+  currency: string;
+  exchange_rate: number;
   created_at: string;
   updated_at: string;
 }
@@ -53,4 +60,6 @@ export interface Budget {
 export type NewBudget = {
   category_id: number;
   amount: number;
+  currency: string;
+  exchange_rate: number;
 };

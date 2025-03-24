@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getExchangeRates } from "@/services/exchangeRates";
 import { useSettings } from "@/app/context/SettingContext";
 import { getTransactions } from "@/services/transactions";
@@ -10,6 +10,7 @@ const RecentActivity = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
   const { currency, language } = useSettings();
+  const currency_settings = useMemo(() => currency, [currency]);
   const t = translations[language === "English" ? "en" : "id"];
 
   useEffect(() => {
@@ -26,18 +27,33 @@ const RecentActivity = () => {
   }, []);
   
   useEffect(() => {
-    const fetchRates = async () => {
-      const rates = await getExchangeRates("USD");
-      if (rates) setExchangeRates(rates);
-    };
-
-    fetchRates();
-  }, []);
+      const fetchRates = async () => {
+        const uniqueCurrencies = Array.from(new Set(transactions.map(tx => tx.currency)));
+        const ratesData: { [key: string]: number } = {};
+    
+        for (const currency of uniqueCurrencies) {
+          const rates = await getExchangeRates(currency);
+    
+          if (rates) {
+            ratesData[currency] = rates[currency_settings];
+          }
+        }
+    
+        setExchangeRates(ratesData);
+      };
+    
+      if (transactions.length > 0) {
+        fetchRates();
+      }
+    }, [transactions, currency, currency_settings]);
   
-  const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string) => {
-    if (!exchangeRates[fromCurrency] || !exchangeRates[toCurrency]) return amount;
-    return (amount / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
-  };
+    const convertCurrency = (amount: number, transactionCurrency: string) => {
+      if (transactionCurrency === currency) return amount;
+      
+      const userCurrencyRate = exchangeRates[transactionCurrency] || 1;
+    
+      return amount * userCurrencyRate;
+    };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(language === "English" ? "en-US" : "id-ID", {
@@ -56,7 +72,7 @@ const RecentActivity = () => {
       <div className="mt-4 card shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-[var(--border-color)]">
           {transactions.map((transaction) => {
-            const convertedAmount = convertCurrency(transaction.amount, transaction.currency, currency);
+            const convertedAmount = convertCurrency(transaction.amount, transaction.currency);
             
             return (
               <li key={transaction.id}>
