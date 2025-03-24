@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Transaction } from "@/types/type";
 import { Button } from "@/components/ui/button";
 import { getExchangeRates } from "@/services/exchangeRates";
@@ -14,7 +14,7 @@ type TransactionListProps = {
 const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit, onDelete }) => {
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
   const { currency, language } = useSettings();
-  const currency_setings = currency;
+  const currency_settings = useMemo(() => currency, [currency]);
   const t = translations[language === "English" ? "en" : "id"];
   const localeMap: Record<string, string> = {
     English: "en-US",
@@ -40,10 +40,10 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
   
       for (const currency of uniqueCurrencies) {
         const rates = await getExchangeRates(currency);
-        console.log(`Fetched exchange rate for ${currency}:`, rates[currency_setings]);
+        console.log(`Fetched exchange rate for ${currency}:`, rates[currency_settings]);
   
         if (rates) {
-          ratesData[currency] = rates[currency_setings];
+          ratesData[currency] = rates[currency_settings];
         }
       }
   
@@ -54,15 +54,15 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
     if (transactions.length > 0) {
       fetchRates();
     }
-  }, [transactions]);
+  }, [transactions, currency, currency_settings]);
 
-  const convertCurrency = (amount: number, transactionCurrency: string, transactionExchangeRate: number) => {
+  const convertCurrency = (amount: number, transactionCurrency: string) => {
     if (transactionCurrency === currency) return amount;
     
     const userCurrencyRate = exchangeRates[transactionCurrency] || 1;
   
     return amount * userCurrencyRate;
-  };  
+  };
 
   return (
     <div className="mt-4 p-2">
@@ -74,7 +74,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, onEdit,
               console.log(
                 `amount: ${transaction.amount}, trans_rate: ${transaction.exchange_rate}, target_rate: ${exchangeRates[currency]}`
               );
-              const convertedAmount = convertCurrency(transaction.amount, transaction.currency, transaction.exchange_rate);
+              const convertedAmount = convertCurrency(transaction.amount, transaction.currency);
 
               return (
                 <li

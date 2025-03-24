@@ -174,6 +174,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
               disabled
               className="modal-input w-full bg-gray-200 dark:bg-gray-700"
             />
+            {loadingRate && <p className="text-sm text-gray-500">{t.loading_exchange_rate}...</p>}
           </div>
         )}
 

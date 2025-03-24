@@ -17,8 +17,6 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
   const { theme } = useTheme();
   const { language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
-
-  const [exchangeRate, setExchangeRate] = useState<number>(1);
   const [loadingRate, setLoadingRate] = useState<boolean>(false);
 
   const [editedTransaction, setEditedTransaction] = useState<Transaction>({
@@ -35,35 +33,28 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
     updated_at: transaction?.updated_at || "",
     deleted_at: transaction?.deleted_at || null,
   });
-
-  if (!transaction) return null;
-
+  
   useEffect(() => {
     const fetchRates = async () => {
-      if (!editedTransaction.currency) return;
-
+      if (!transaction || !editedTransaction.currency) return;
+  
       if (editedTransaction.currency === "IDR") {
-        setExchangeRate(1);
         setEditedTransaction((prev) => ({
           ...prev,
           exchange_rate: 1,
         }));
         return;
       }
-
+  
       setLoadingRate(true);
       try {
         const rates = await getExchangeRates(editedTransaction.currency);
-        const rate = rates["IDR"] || 1;
-
-        setExchangeRate(rate);
         setEditedTransaction((prev) => ({
           ...prev,
-          exchange_rate: rate,
+          exchange_rate: rates["IDR"] || 1,
         }));
       } catch (error) {
         console.error("Failed to fetch exchange rates", error);
-        setExchangeRate(1);
         setEditedTransaction((prev) => ({
           ...prev,
           exchange_rate: 1,
@@ -71,9 +62,9 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
       }
       setLoadingRate(false);
     };
-
+  
     fetchRates();
-  }, [editedTransaction.currency]);
+  }, [transaction, editedTransaction.currency]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -115,6 +106,8 @@ const EditTransactionModal: React.FC<EditTransactionModalProps> = ({ transaction
     onSave({ ...editedTransaction, note: editedTransaction.note ?? "" });
     onClose();
   };
+  
+  if (!transaction) return null;
 
   return (
     <div className="modal-wrapper">
