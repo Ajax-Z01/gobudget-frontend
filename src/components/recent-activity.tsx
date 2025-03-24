@@ -56,7 +56,7 @@ const RecentActivity = () => {
       <div className="mt-4 card shadow overflow-hidden sm:rounded-md">
         <ul className="divide-y divide-[var(--border-color)]">
           {transactions.map((transaction) => {
-            const convertedAmount = convertCurrency(transaction.amount, "USD", currency);
+            const convertedAmount = convertCurrency(transaction.amount, transaction.currency, currency);
             
             return (
               <li key={transaction.id}>

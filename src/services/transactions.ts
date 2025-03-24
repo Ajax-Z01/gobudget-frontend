@@ -38,6 +38,7 @@ const handleApiError = (error: unknown): never => {
 export const getTransactions = async (params: TransactionParams = {}): Promise<Transaction[]> => {
   try {
     const response = await api.get("/transactions", { params });
+    console.log("🚀 ~ file: transactions.ts ~ line 100 ~ getTransactions ~ response", response);
     return response.data;
   } catch (error: unknown) {
     return Promise.reject(handleApiError(error));
