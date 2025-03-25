@@ -20,27 +20,31 @@ export default function BudgetList({ budgets, setBudgets }: BudgetListProps) {
   const { language, currency } = useSettings();
   const currency_settings = useMemo(() => currency, [currency]);
   const t = translations[language === "English" ? "en" : "id"];
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Memoization exchangeRates agar tidak memicu re-render tak terbatas
   const exchangeRatesMemo = useMemo(() => exchangeRates, [exchangeRates]);
 
   useEffect(() => {
     const fetchRates = async () => {
+      setIsLoading(true);
       const uniqueCurrencies = Array.from(new Set(budgets.map((tx) => tx.currency)));
 
       const currenciesToFetch = uniqueCurrencies.filter(
         (curr) => !(curr in exchangeRatesMemo) || !(currency_settings in exchangeRatesMemo)
       );
 
-      if (currenciesToFetch.length === 0) return;
+      if (currenciesToFetch.length === 0) {
+        setIsLoading(false);
+        return;
+      }
 
       const ratesData: { [key: string]: number } = { ...exchangeRatesMemo };
 
       for (const curr of currenciesToFetch) {
         try {
-          const rates = await getExchangeRates(curr);
+          const rates = await getExchangeRates("IDR");
           if (rates) {
-            ratesData[curr] = rates["IDR"];
+            ratesData[curr] = rates[curr] || 1;
             ratesData[currency_settings] = rates[currency_settings] || 1;
           }
         } catch (error) {
@@ -49,6 +53,7 @@ export default function BudgetList({ budgets, setBudgets }: BudgetListProps) {
       }
 
       setExchangeRates(ratesData);
+      setIsLoading(false);
     };
 
     if (budgets.length > 0) {
@@ -77,7 +82,9 @@ export default function BudgetList({ budgets, setBudgets }: BudgetListProps) {
 
   const handleUpdate = async () => {
     if (!editBudget) return;
-
+    
+    setIsLoading(true);
+    
     try {
       const updatedBudget = await updateBudget(editBudget.id, {
         amount: parseFloat(newAmount),
@@ -88,17 +95,31 @@ export default function BudgetList({ budgets, setBudgets }: BudgetListProps) {
       setEditBudget(null);
     } catch (error) {
       console.error(t.create_budget_error, error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
+    setIsLoading(true);
+    
     try {
       await deleteBudget(id);
       setBudgets(budgets.filter((b) => b.id !== id));
     } catch (error) {
       console.error(t.fetch_error, error);
+    } finally {
+      setIsLoading(false);
     }
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-2">

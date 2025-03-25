@@ -1,28 +1,11 @@
-import React, { JSX, useEffect, useState } from "react";
+import React, { JSX } from "react";
 import Link from "next/link";
-import { getExchangeRates } from "@/services/exchangeRates";
 import { useSettings } from "@/app/context/SettingContext";
 import { translations } from "@/utils/translations";
 
-const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.Element }> = ({ title, value, color, icon }) => {
-  const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
+const Card: React.FC<{ title: string; value: number; color: string; icon: JSX.Element }> = ({ title, value, color, icon }) => {
   const { currency, language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
-
-  useEffect(() => {
-    const fetchRates = async () => {
-      const rates = await getExchangeRates("IDR");
-      if (rates) setExchangeRates(rates);
-    };
-    fetchRates();
-  }, []);
-
-  const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string) => {
-    if (!exchangeRates[fromCurrency] || !exchangeRates[toCurrency]) return amount;
-    return (amount / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
-  };
-
-  const convertedValue = convertCurrency(Number(value), "IDR", currency);
 
   return (
     <div className="card overflow-hidden shadow-lg rounded-lg">
@@ -36,7 +19,10 @@ const Card: React.FC<{ title: string; value: string; color: string; icon: JSX.El
           <dl>
             <dt className="text-sm font-medium truncate card-title">{title}</dt>
             <dd className="text-lg font-medium" style={{ color: "var(--card-text)" }}>
-              {new Intl.NumberFormat(language === "Bahasa" ? "id-ID" : "en-US", { style: "currency", currency }).format(convertedValue)}
+            {new Intl.NumberFormat(language === "Bahasa" ? "id-ID" : "en-US", {
+                style: "currency",
+                currency,
+              }).format(value)}
             </dd>
           </dl>
         </div>

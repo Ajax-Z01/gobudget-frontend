@@ -79,10 +79,8 @@ export default function BudgetsPage() {
 
       const updatedBudgets = await getBudgets();
       setBudgets(updatedBudgets);
-
       setCategoryId("");
       setAmount("");
-      
       console.log("Created budget:", newBudget);
     } catch (error) {
       console.error("❌ Error creating budget:", error);
@@ -95,7 +93,7 @@ export default function BudgetsPage() {
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
       </div>
-    );
+    );  
   }
 
   return (

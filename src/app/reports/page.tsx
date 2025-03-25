@@ -17,7 +17,7 @@ export default function ReportsPage() {
   const router = useRouter();
   const { language,currency } = useSettings();
   const [user, setUser] = useState<{ email: string; name: string } | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState({ total_income: 0, total_expense: 0, balance: 0 });
   const [trendData, setTrendData] = useState<{ month: string; total_income: number; total_expense: number }[]>([]);
@@ -28,50 +28,79 @@ export default function ReportsPage() {
     Bahasa: "id-ID",
   };
   const currentLocale = localeMap[language] || "en-US";
+  
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      setIsLoading(true);
+      if (currency === "IDR") {
+        setExchangeRate(1);
+        setIsLoading(false);
+        return;
+      }
+  
+      try {
+        const rates = await getExchangeRates("IDR");
+        if (rates && rates[currency]) {
+          setExchangeRate(rates[currency]);
+        } else {
+          setExchangeRate(1);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching exchange rates:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchExchangeRates();
+  }, [currency]);  
 
   useEffect(() => {
+    if (isLoading) return;
+    
     const fetchData = async () => {
       try {
         const userData = await getUser();
         setUser(userData);
-  
+
         const summaryData = await getSummary();
-        setSummary(summaryData);
-  
-        const convertedTrend = summaryData.trend.map(item => ({
-          ...item,
-          total_income: item.total_income * exchangeRate,
-          total_expense: item.total_expense * exchangeRate,
-          balance: (item.total_income - item.total_expense) * exchangeRate
-        }));
-        
+        setSummary({
+          total_income: summaryData.total_income * exchangeRate,
+          total_expense: summaryData.total_expense * exchangeRate,
+          balance: summaryData.balance * exchangeRate,
+        });
+
+        let accumulatedBalance = 0;
+        const convertedTrend = summaryData.trend.map((item) => {
+          accumulatedBalance += (item.total_income - item.total_expense) * exchangeRate;
+          return {
+            month: item.month,
+            total_income: item.total_income * exchangeRate,
+            total_expense: item.total_expense * exchangeRate,
+            balance: accumulatedBalance,
+          };
+        });
+
         setTrendData(convertedTrend);
-  
-        const rates = await getExchangeRates("USD");
-        if (rates && rates[currency]) {
-          setExchangeRate(rates[currency]);
-        }
-      } catch (err: unknown) {
-        console.error("❌ Error fetching data:", err instanceof Error ? err.message : String(err));
+      } catch (err) {
+        console.error("❌ Error fetching data:", err);
         setError("Failed to fetch data. Redirecting to login...");
         router.replace("/login");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-    fetchData();
-  }, [router, currency, exchangeRate]);  
 
+    fetchData();
+  }, [router, exchangeRate, isLoading]);
+  
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", { 
-      style: "currency", 
-      currency 
-    }).format(Math.round(amount * exchangeRate));
+    return new Intl.NumberFormat(currentLocale, { style: "currency", currency }).format(amount);
   };
   
   const formatMonth = (dateString: string) => {
     const date = new Date(dateString + "-01");
-    return date.toLocaleString("en-US", { month: "short", year: "numeric" });
+    return date.toLocaleString(currentLocale, { month: "short", year: "numeric" });
   };
 
   const handleLogout = async () => {
@@ -97,7 +126,7 @@ export default function ReportsPage() {
     URL.revokeObjectURL(url);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -136,6 +165,13 @@ export default function ReportsPage() {
 
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-4 border border-[var(--border-color)] bg-[var(--secondary)] rounded-lg">
+                  <h2 className="text-lg font-medium text-[var(--text-black)]">{t.final_balance}</h2>
+                  <p className="text-2xl font-bold text-[var(--text-black)]">
+                    {formatCurrency(summary.balance)}
+                  </p>
+                </div>
+                
                 <div className="p-4 border border-[var(--border-color)] bg-[var(--primary)] rounded-lg">
                   <h2 className="text-lg font-medium text-[var(--text-black)]">{t.total_income}</h2>
                   <p className="text-2xl font-bold text-[var(--text-black)]">
@@ -147,13 +183,6 @@ export default function ReportsPage() {
                   <h2 className="text-lg font-medium text-[var(--text-black)]">{t.total_expense}</h2>
                   <p className="text-2xl font-bold text-[var(--text-black)]">
                     {formatCurrency(summary.total_expense)}
-                  </p>
-                </div>
-
-                <div className="p-4 border border-[var(--border-color)] bg-[var(--secondary)] rounded-lg">
-                  <h2 className="text-lg font-medium text-[var(--text-black)]">{t.final_balance}</h2>
-                  <p className="text-2xl font-bold text-[var(--text-black)]">
-                    {formatCurrency(summary.balance)}
                   </p>
                 </div>
               </div>

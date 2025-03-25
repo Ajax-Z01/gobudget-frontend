@@ -8,7 +8,7 @@ interface Summary {
   total_expense: number;
 }
 
-const SummaryCards: React.FC<{ summary: Summary }> = ({ summary }) => {
+const SummaryCards: React.FC<{ summary: Summary; }> = ({ summary }) => {
   const { language } = useSettings();
   const t = translations[language === "English" ? "en" : "id"];
 
@@ -18,7 +18,7 @@ const SummaryCards: React.FC<{ summary: Summary }> = ({ summary }) => {
         {/* Balance Card */}
         <Card 
           title={t.final_balance} 
-          value={summary?.balance?.toFixed(2) || "0.00"} 
+          value={summary.balance}
           color="secondary" 
           icon={
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -27,7 +27,7 @@ const SummaryCards: React.FC<{ summary: Summary }> = ({ summary }) => {
         {/* Income Card */}
         <Card 
           title={t.total_income} 
-          value={summary?.total_income?.toFixed(2) || "0.00"} 
+          value={summary.total_income}
           color="primary" 
           icon={
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -36,7 +36,7 @@ const SummaryCards: React.FC<{ summary: Summary }> = ({ summary }) => {
         {/* Expenses Card */}
         <Card 
           title={t.total_expense} 
-          value={summary?.total_expense?.toFixed(2) || "0.00"} 
+          value={summary.total_expense}
           color="tertiary" 
           icon={
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
