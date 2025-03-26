@@ -135,7 +135,7 @@ export default function BudgetsPage() {
               onChange={(e) => setCurrency(e.target.value)}
               className="w-full sm:w-auto px-4 py-2 border rounded-md text-[var(--card-text)] bg-[var(--background)]"
             >
-              {["IDR", "USD", "EUR", "JPY"].map((curr) => (
+              {["IDR", "USD", "EUR", "JPY", "CNY", "GBP", "AUD", "CAD", "CHF", "HKD", "SGD"].map((curr) => (
                 <option key={curr} value={curr}>{curr}</option>
               ))}
             </select>

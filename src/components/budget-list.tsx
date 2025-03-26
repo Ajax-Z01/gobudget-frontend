@@ -146,6 +146,9 @@ export default function BudgetList({ budgets, setBudgets }: BudgetListProps) {
                     onChange={(e) => setNewAmount(e.target.value)}
                     className="border p-2 rounded w-full sm:w-32"
                   />
+                  <div className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-l-md">
+                    {budget.currency}
+                  </div>
                   <Button onClick={handleUpdate} variant="primary" className="w-full sm:w-auto">
                     {t.save}
                   </Button>

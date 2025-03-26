@@ -25,8 +25,7 @@ export default function Header() {
         <Link href="/contact" className="font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)]">Contact</Link>
       </nav>
       <div className="flex gap-3">
-        <Link href="/login" className="font-semibold text-[var(--primary)] hover:text-[var(--primary-hover)] px-4 py-1 hidden sm:block">Sign In</Link>
-        <Link href="/register" className="bg-[var(--secondary)] hover:bg-[var(--secondary-hover)] text-white px-4 py-2 rounded-full text-sm transition-colors">Get Started</Link>
+        <Link href="/login" className="bg-[var(--secondary)] hover:bg-[var(--secondary-hover)] text-white px-4 py-2 rounded-full text-sm transition-colors">Get Started</Link>
       </div>
     </header>
   );

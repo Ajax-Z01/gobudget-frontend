@@ -150,6 +150,13 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ onClose, onSa
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
             <option value="JPY">JPY</option>
+            <option value="GBP">GBP</option>
+            <option value="AUD">AUD</option>
+            <option value="CAD">CAD</option>
+            <option value="CHF">CHF</option>
+            <option value="CNY">CNY</option>
+            <option value="HKD">HKD</option>
+            <option value="SGD">SGD</option>
           </select>
 
           {/* Amount Input */}

@@ -88,6 +88,13 @@ export default function SettingsPage() {
                   <option className="text-[var(--text-black)]" value="USD">USD - US Dollar</option>
                   <option className="text-[var(--text-black)]" value="EUR">EUR - Euro</option>
                   <option className="text-[var(--text-black)]" value="JPY">JPY - Japanese Yen</option>
+                  <option className="text-[var(--text-black)]" value="GBP">GBP - British Pound</option>
+                  <option className="text-[var(--text-black)]" value="AUD">AUD - Australian Dollar</option>
+                  <option className="text-[var(--text-black)]" value="CAD">CAD - Canadian Dollar</option>
+                  <option className="text-[var(--text-black)]" value="CHF">CHF - Swiss Franc</option>
+                  <option className="text-[var(--text-black)]" value="CNY">CNY - Chinese Yuan</option>
+                  <option className="text-[var(--text-black)]" value="HKD">HKD - Hong Kong Dollar</option>
+                  <option className="text-[var(--text-black)]" value="SGD">SGD - Singapore Dollar</option>
                 </select>
               </div>
 
